@@ -2,11 +2,12 @@
   "name": "tnlib_helper",
   "version": "1.0",
   "description": "Build an Extension!",
-  "permissions": ["activeTab", "declarativeContent", "storage"],
+  "permissions": ["activeTab", "declarativeContent","tabs"],
   "content_scripts": [
     {
       "matches": ["http://163.26.71.107/*"],
-      "js": ["script/lib/jquery-3.3.1.min.js", "script/myscript.js"]
+      "js": ["script/lib/jquery-3.3.1.min.js", "script/myscript.js"],
+      "run_at":"document_end"
     }
   ],
   "background": {
