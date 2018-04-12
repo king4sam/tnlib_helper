@@ -5,11 +5,19 @@ function keydowne(event){
 	var x = event.which || event.keyCode;
 	switch(x){
 		case 67://c
+			//TransitItemsToBeReceived
+			if($('#closemeplease')[0] !== undefined){
+				event.preventDefault();
+				event.stopPropagation();
+				alert('closemeplease');
+				$('#closemeplease')[0].click();
+			}
 			//close print
-			if($('#closeHoldSlipPrint')[0] !== undefined ){
+			else if($('#closeHoldSlipPrint')[0] !== undefined ){
 				event.preventDefault();
 				$('#closeHoldSlipPrint')[0].click();
 			}
+
 			//attached fined
 			else if($('#content-buttons a')[1] !== undefined){
 				event.preventDefault();
@@ -47,9 +55,22 @@ function keydowne(event){
 				document.getElementById("cardNumberField").focus();
 			}
 			break;
-		case 222://''
+		case 222://'
 			event.preventDefault();
 			window.location = '/toread/circulation/pages/loan_desk';
 			break;
 	}
+}
+
+//add close button to 
+//TransitItemsToBeReceived popup windows
+var patt = new RegExp('http:\/\/163\.26\.71\.107\/toread\/circulation\/exttransit\/TransitItemsToBeReceived,popupComponent.*');
+console.log('whether url match?' + patt.test(location.href));
+if(patt.test(location.href)){
+	var t = document.createElement('a');
+	t.id = 'closemeplease';
+	t.classList.add("dialog")
+	t.appendChild(document.createTextNode("close"));
+	t.onclick = function(e){window.close()};
+	$('table tr td').append(t);
 }
