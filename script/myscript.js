@@ -97,3 +97,56 @@ function keydowne(event){
 		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), {'subtre' : true, 'childList':true,'characterData':true});
 	}
 }(document));
+
+//add today borrow count field
+// in PatronDetails
+(function(document,location,$){
+	var loan_desk_url = new RegExp('http:\/\/163\.26\.71\.107\/toread\/circulation\/pages\/loan_desk*');
+	if(loan_desk_url.test(location.href)){
+		document.borrowcount = function(e){
+			//fetch records of book
+			var a = $('#If_43 tr').toArray();
+			a.shift();
+
+			var now = new Date();
+
+			 function sameday(a, b){
+			  return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+			 }
+
+			 function Sum(total, num) {
+			     return total + num;
+			 }
+
+			 function istoday(e){
+			  var t = new Date(e.children[9].innerText);
+			  return sameday(t,now) === true ? 1 : 0;
+			 }
+
+			 return a.map(istoday).reduce(Sum,0);
+		};
+
+		var add_row_of_borrowcount = function(records){
+			var position_of_borrowcount = '#viewPatronDetailsComponent> tbody> tr> td >table >tbody> tr> td >table >tbody:last-child';
+			var reader = $(position_of_borrowcount)
+			if(reader.length !== 0){
+				reader.append(
+					'<tr id = "todayborrowcount"><td><b>今日借書:</b>' 
+					+ '<font color="#2952A3" style="font-weight: bold;">' 
+					+ document.borrowcount() 
+					+ '</font></td></tr>'
+				);
+			}
+		};
+
+		var modify_borrowcount = function(records){
+			$('#todayborrowcount font').innerText =  document.borrowcount();
+		};
+
+		//listen to panel change
+		var PatronObserber = new MutationObserver(add_row_of_borrowcount);
+		var TransactionsObserber = new MutationObserver(modify_borrowcount);
+		PatronObserber.observe(document.getElementById('PatronItemDetails'), {'childList':true,'characterData':true});
+		TransactionsObserber.observe(document.getElementById('TransactionsContent'), {'subtree':true,'childList':true,'characterData':true});
+	}
+}(document,location,$));
