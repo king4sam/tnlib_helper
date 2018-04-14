@@ -79,3 +79,21 @@ function keydowne(event){
 		$('table tr td').append(closebtn);
 	}
 }(document));
+
+//AssignedReports
+//select default value setup
+(function(document){
+	function AssignedReportsSetDefault(document){
+		try{
+			document.getElementById('PropertySelection_6').selectedIndex = '1';
+			document.getElementById('PropertySelection_7').selectedIndex = '2';	
+		}
+		catch(e){
+			console.log('no AssignedReports');
+		}
+	}
+	if(document.getElementById('AssignedReports') !== null){
+		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
+		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), {'subtre' : true, 'childList':true,'characterData':true});
+	}
+}(document));
