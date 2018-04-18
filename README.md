@@ -1,7 +1,7 @@
 # tnlib_helper
 helper chrome extension for Tainan Public Libraries
 
-#Main Features
+# Main Features
 
 ## 1. Hotkeys
 
