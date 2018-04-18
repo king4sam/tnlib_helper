@@ -2,14 +2,28 @@
 <html>
   <head>
   	<meta charset="UTF-8">
-    <script src="../script/lib/jquery-3.3.1.min.js"></script>
-    <script src="../script/lib/popper.min.js"></script>
-    <script src="../script/lib/bootstrap.js"></script>
+    <script type="text/javascript" src="../script/lib/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="../script/lib/popper.min.js"></script>
+    <script type="text/javascript" src="../script/lib/bootstrap.js"></script>
+    <script type="text/javascript" src="../script/lib/papaparse.js"></script>
     <link rel="stylesheet" type="text/css" href="css/extension.css">
     <link rel="stylesheet" type="text/css" href="../script/lib/bootstrap.min.css">
   </head>
   <body>
-    熱鍵列表
+
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="hotkeytable-tab" data-toggle="tab" href="#hotkeytable" role="tab" aria-controls="hotkeytable" aria-selected="true">熱鍵列表</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="uploadcsv-tab" data-toggle="tab" href="#uploadcsv" role="tab" aria-controls="uploadcsv" aria-selected="false">上傳到館預約書</a>
+  </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
+     <button type="button" id = 'closebtn' class="close" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
     <table class="table table-striped">
   <thead>
     <tr>
@@ -18,7 +32,7 @@
     </tr>
   </thead>
   <tbody>
-  	 <tr>
+     <tr>
       <th scope="row">是</th>
       <td>Y</td>
     </tr>
@@ -52,5 +66,20 @@
     </tr>
   </tbody>
 </table>
+  </div>
+  <div class="tab-pane fade" id="uploadcsv" role="tabpanel" aria-labelledby="uploadcsv-tab"> 
+    <button type="button" id = 'closebtn' class="close" aria-label="Close" style="display: none">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    <input type="file" id="fileForUpload">
+
+    <div id = 'fileContents'></div>
+    <button id="fileConfirm-btn">確認上傳</button>
+    <div id = 'fileContents'></div>
+    
+    <script type="text/javascript" src = 'file.js'></script>
+  </div>
+
+
   </body>
 </html>
