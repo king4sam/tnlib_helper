@@ -1,65 +1,65 @@
 'use strict';
-document.addEventListener("keydown",keydowne,true);
+document.addEventListener("keydown", keydowne, true);
+var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
-function keydowne(event){
+function keydowne(event) {
 	var x = event.which || event.keyCode;
-	switch(x){
-		case 67://c
+	switch (x) {
+		case 67: //c
 			//TransitItemsToBeReceived
-			if($('#closemeplease')[0] !== undefined){
+			if ($('#closemeplease')[0] !== undefined) {
 				event.preventDefault();
-				alert('closemeplease');
 				$('#closemeplease')[0].click();
 			}
 			//close print
-			else if($('#closeHoldSlipPrint')[0] !== undefined ){
+			else if ($('#closeHoldSlipPrint')[0] !== undefined) {
 				event.preventDefault();
 				$('#closeHoldSlipPrint')[0].click();
 			}
 
 			//attached fined
-			else if($('#content-buttons a')[1] !== undefined){
+			else if ($('#content-buttons a')[1] !== undefined) {
 				event.preventDefault();
 				$('#content-buttons a')[1].click();
 			}
 			//preserved
-			else if($('#HoldsListDialog_content a')[0] !== undefined){
+			else if ($('#HoldsListDialog_content a')[0] !== undefined) {
 				event.preventDefault();
 				$('#HoldsListDialog_content a')[0].click();
 			}
 			//origin
-			else if($('#TinreadMessageDialog_content a')[0] !== undefined){
+			else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
 				event.preventDefault();
 				$('#TinreadMessageDialog_content a')[0].click();
 			}
 			break;
-		case 89://y
+		case 89: //y
 			//attached fined
-			if($('#content-buttons a')[0] !== undefined){
+			if ($('#content-buttons a')[0] !== undefined) {
 				event.preventDefault();
 				$('#content-buttons a')[0].click();
 				document.getElementById("itemNumberField").value = '';
 			}
 			break;
-		case 80://p
-			if($('#HoldSlipDialog_content a')[0] !== undefined){
+		case 80: //p
+			if ($('#HoldSlipDialog_content a')[0] !== undefined) {
 				event.preventDefault();
 				$('#HoldSlipDialog_content a')[0].click();
 				document.getElementById("itemNumberField").value = '';
 			}
 			break;
-		case 88://x
-			if($('#closePopupTop')[0] !== undefined){
+		case 88: //x
+			if ($('#closePopupTop')[0] !== undefined) {
 				$('#closePopupTop')[0].click();
 			}
 			break;
-		case 221://]
-			if(document.getElementById("cardNumberField") ){
+		case 221: //]
+			if (document.getElementById("cardNumberField")) {
 				event.preventDefault();
 				document.getElementById("cardNumberField").focus();
 			}
 			break;
-		case 222://'
+		case 222: //'
 			event.preventDefault();
 			window.location = '/toread/circulation/pages/loan_desk';
 			break;
@@ -68,85 +68,84 @@ function keydowne(event){
 
 //add close button to 
 //TransitItemsToBeReceived popup windows
-(function(document){
-	var TransitItemsToBeReceived = new RegExp('http:\/\/163\.26\.71\.107\/toread\/circulation\/exttransit\/TransitItemsToBeReceived,popupComponent.*');
-	if(TransitItemsToBeReceived.test(location.href)){
+(function(document) {
+	var TransitItemsToBeReceived = new RegExp(host + 'circulation\/exttransit\/TransitItemsToBeReceived,popupComponent.*');
+	if (TransitItemsToBeReceived.test(location.href)) {
 		var closebtn = document.createElement('a');
 		closebtn.id = 'closemeplease';
 		closebtn.classList.add("dialog")
 		closebtn.appendChild(document.createTextNode("close"));
-		closebtn.onclick = function(e){window.close()};
+		closebtn.onclick = function(e) { window.close() };
 		$('table tr td').append(closebtn);
 	}
 }(document));
 
 //AssignedReports
 //select default value setup
-(function(document){
-	function AssignedReportsSetDefault(document){
-		try{
+(function(document) {
+	function AssignedReportsSetDefault() {
+		try {
 			document.getElementById('PropertySelection_6').selectedIndex = '1';
-			document.getElementById('PropertySelection_7').selectedIndex = '2';	
-		}
-		catch(e){
+			document.getElementById('PropertySelection_7').selectedIndex = '2';
+		} catch (e) {
 			console.log('no AssignedReports');
 		}
 	}
-	if(document.getElementById('AssignedReports') !== null){
+	if (document.getElementById('AssignedReports') !== null) {
 		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
-		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), {'subtre' : true, 'childList':true,'characterData':true});
+		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
 }(document));
 
 //add today borrow count field
 // in PatronDetails
-(function(document,location,$){
-	var loan_desk_url = new RegExp('http:\/\/163\.26\.71\.107\/toread\/circulation\/pages\/loan_desk*');
-	if(loan_desk_url.test(location.href)){
-		document.borrowcount = function(e){
+(function(document, location, $) {
+	var loan_desk_url = new RegExp(host + 'circulation\/pages\/loan_desk*');
+	if (loan_desk_url.test(location.href)) {
+		document.borrowcount = function(e) {
 			//fetch records of book
 			var a = $('#If_43 tr').toArray();
 			a.shift();
 
 			var now = new Date();
 
-			 function sameday(a, b){
-			  return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
-			 }
+			function sameday(a, b) {
+				return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
+			}
 
-			 function Sum(total, num) {
-			     return total + num;
-			 }
+			function Sum(total, num) {
+				return total + num;
+			}
 
-			 function istoday(e){
-			  var t = new Date(e.children[9].innerText);
-			  return sameday(t,now) === true ? 1 : 0;
-			 }
+			function istoday(e) {
+				var t = new Date(e.children[9].innerText);
+				return sameday(t, now) === true ? 1 : 0;
+			}
 
-			 return a.map(istoday).reduce(Sum,0);
+			return a.map(istoday).reduce(Sum, 0);
 		};
 
-		var add_row_of_borrowcount = function(records){
+		var add_row_of_borrowcount = function(records) {
 			var position_of_borrowcount = '#viewPatronDetailsComponent> tbody> tr> td >table >tbody> tr> td >table >tbody:last-child';
 			var reader = $(position_of_borrowcount)
-			if(reader.length !== 0){
+			if (reader.length !== 0) {
 				reader.append(
-					'<tr id = "todayborrowcount"><td><b>今日借書:</b>' 
-					+ '<font color="#2952A3" style="font-weight: bold;">' 
-					+ document.borrowcount() 
-					+ '</font></td></tr>'
+					'<tr id = "todayborrowcount"><td><b>今日借書:</b>' +
+					'<font color="#2952A3" style="font-weight: bold;">' +
+					document.borrowcount() +
+					'</font></td></tr>'
 				);
 			}
 		};
 
-		var modify_borrowcount = function(records){
-			$('#todayborrowcount font').innerText =  document.borrowcount();
+		var modify_borrowcount = function(records) {
+			$('#todayborrowcount font').innerText = document.borrowcount();
 		};
 
 		//listen to panel change
 		var PatronObserber = new MutationObserver(add_row_of_borrowcount);
 		var TransactionsObserber = new MutationObserver(modify_borrowcount);
-		PatronObserber.observe(document.getElementById('PatronItemDetails'), {'childList':true,'characterData':true});
-		TransactionsObserber.observe(document.getElementById('TransactionsContent'), {'subtree':true,'childList':true,'characterData':true});
+		PatronObserber.observe(document.getElementById('PatronItemDetails'), { 'childList': true, 'characterData': true });
+		TransactionsObserber.observe(document.getElementById('TransactionsContent'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
-}(document,location,$));
+}(document, location, $));

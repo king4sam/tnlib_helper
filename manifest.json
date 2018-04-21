@@ -1,6 +1,6 @@
 {
   "name": "tnlib_helper",
-  "version": "0.1",
+  "version": "0.2",
   "description": "Helper extension for Tainan Public Libraries",
   "permissions": ["activeTab", "declarativeContent","tabs","storage"],
   "content_scripts": [
