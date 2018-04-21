@@ -19,6 +19,9 @@
     <li class="nav-item">
       <a class="nav-link" id="uploadcsv-tab" data-toggle="tab" href="#uploadcsv" role="tab" aria-controls="uploadcsv" aria-selected="false">上傳到館預約書</a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
+    </li>
   </ul>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
@@ -78,6 +81,17 @@
       <div id='fileContents'></div>
       <script type="text/javascript" src='file.js'></script>
     </div>
+    <div class="tab-pane fade" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
+      <button type="button" id='closebtn' class="close" aria-label="Close" style="display: none">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <input type="file" id="fileForUpload1">
+      <div id='fileContents1'></div>
+      <button id="fileConfirm-btn1">確認上傳</button>
+      <script type="text/javascript" src='findcomments.js'></script>
+    </div>
+    <!-- <table id = 'bookhascomment'></table> -->
+    <!-- <div id = 'bookhascomment'></div> -->
 </body>
 
 </html>
