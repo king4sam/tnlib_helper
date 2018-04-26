@@ -7,6 +7,7 @@ chrome.storage.sync.get("reservedbooks", function(items) {
 			const BarcodeGroupNumber = 2;
 			const IndexofCheckcol = 7;
 			var matches;
+			var anding = /^ED\d{7}/g;
 			while ((matches = regex.exec(this.responseText)) !== null) {
 				// This is necessary to avoid infinite loops with zero-width matches
 				if (matches.index === regex.lastIndex) {
@@ -15,7 +16,7 @@ chrome.storage.sync.get("reservedbooks", function(items) {
 
 				//if the books was arrived, hightlight the row in table
 				var barcode = matches[BarcodeGroupNumber];
-				if (items['reservedbooks'].indexOf(barcode) !== -1) {
+				if (items['reservedbooks'].indexOf(barcode) !== -1 || anding.test(barcode)) {
 					var trs = $("table[class='tab1'] tr").toArray().slice(1, -1);
 					trs[this.index].children[IndexofCheckcol].style.backgroundColor = '#fbff0075';
 				}
