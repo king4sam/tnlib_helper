@@ -2,9 +2,9 @@ document.getElementById('closebtn1').addEventListener('click', function() { wind
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
 function file_viewer_load1(event) {
-	document.getElementById('fileForUpload')
 	var file = document.getElementById('fileForUpload1').files[0]
 	if (file) {
+		$('#commenttable>tbody').empty();
 		document.getElementById('fileForUpload1')
 		var reader = new FileReader();
 		reader.readAsText(file, "big5");
@@ -78,7 +78,8 @@ function getcomments(url,book) {
     // Do the usual XHR stuff
     var req = new XMLHttpRequest();
     req.open('GET', url);
-    req.setRequestHeader('Accept','	text/html')
+    req.setRequestHeader('Accept','	text/html');
+    req.setRequestHeader('Access-Control-Allow-Origin','http://163.26.71.106');
     req.book = book;
 
     req.onload = function() {
@@ -118,7 +119,8 @@ function getlc(url,book) {
     // Do the usual XHR stuff
     var req = new XMLHttpRequest();
     req.open('GET', url);
-    req.setRequestHeader('Accept','	text/html')
+    req.setRequestHeader('Accept','	text/html');
+    req.setRequestHeader('Access-Control-Allow-Origin','http://163.26.71.106');
     req.book =  book;
 
     req.onload = function() {
@@ -164,8 +166,8 @@ function get(book) {
     var req = new XMLHttpRequest();
     req.book = book;
     req.open('GET', host + search + par1 + book[0] + par2);
-    req.setRequestHeader('Accept','	text/html')
-    
+    req.setRequestHeader('Accept','	text/html');
+    req.setRequestHeader('Access-Control-Allow-Origin','http://163.26.71.106');
 
     req.onload = function() {
       // This is called even on 404 etc
