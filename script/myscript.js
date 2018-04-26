@@ -91,7 +91,8 @@ function keydowne(event) {
 			console.log('no AssignedReports');
 		}
 	}
-	if (document.getElementById('AssignedReports') !== null) {
+	var exttransit_url = new RegExp(host + 'circulation\/exttransit\/required_from_ext_transit*');
+	if (exttransit_url.test(location.href) && document.getElementById('AssignedReports') !== null) {
 		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
 		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
