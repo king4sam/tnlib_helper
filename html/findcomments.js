@@ -1,6 +1,19 @@
 document.getElementById('closebtn1').addEventListener('click', function() { window.close() });
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
+chrome.storage.sync.get("sendoutlist", function(books) {
+	if (chrome.runtime.lastError || books['sendoutlist'] === undefined) {
+		console.log('no sendoutlist')
+	} else {
+		books['sendoutlist'].forEach(function(e){
+			if(e[2].length !== 0){
+				$('#commenttable>tbody').append('<tr><th scope="row">'+e[0]+'</th><td>'+e[1]+'</td><td>'+e[2]+'</td></tr>');
+			}
+		});
+		document.getElementById('commenttable').style.display = 'inline';
+	}
+});
+
 function file_viewer_load1(event) {
 	var file = document.getElementById('fileForUpload1').files[0]
 	if (file) {
@@ -46,20 +59,29 @@ function file_viewer_load1(event) {
 					})
 				)
 			}).then(function(pages){
-				pages.forEach(function(page){
+				var books = pages.map(function(page){
 					var parser = new DOMParser();
 					var htmlDoc =parser.parseFromString(page.response, "text/html");
-					// console.log(htmlDoc.querySelector('#rdk_content_1 >table > tbody > tr'));
 					var tr =  Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr')).filter(function(e){return e.children[0].innerText.trim() == page.book[0]});
-					if(tr.length == 0){
-						console.log('ERR ' + page.responseURL);
-					}
-					else if(tr[0].children[8].innerText.trim().length > 0){
-						$('#commenttable>tbody tr:last').after('<tr><th scope="row">'+page.book[0]+'</th><td>'+page.book[1]+'</td><td>'+tr[0].children[8].innerText.trim()+'</td></tr>')
-						// document.getElementById("fileContents1").innerHTML = document.getElementById("fileContents1").innerHTML + tr[0].children[0].innerText.trim() + tr[0].children[8].innerText.trim() + '</br>';
-					}
 					
-				});	
+					if(tr.length !== 0 && tr[0].children[8].innerText.trim().length > 0){
+						return [page.book[0],page.book[1],tr[0].children[8].innerText.trim()]
+					}
+					else{
+						return [page.book[0],page.book[1],''];
+					}
+				});
+
+				books.forEach(function(e){
+					if(e[2].length !== 0){
+						$('#commenttable>tbody').append('<tr><th scope="row">'+e[0]+'</th><td>'+e[1]+'</td><td>'+e[2]+'</td></tr>');
+					}
+				});
+
+				chrome.storage.sync.set({ "sendoutlist": books }, function() {
+					console.log("set");
+				});
+
 				document.getElementById('fileConfirm-btn1').remove();
 				document.getElementById('fileForUpload1').remove();
 				document.getElementById('closebtn1').style.display = 'inline';
@@ -159,7 +181,6 @@ function get(book) {
   const search = 'webpac\/search.cfm'
   const par1 = '?m=ss&k0=';
   const par2 = '&t0=k&c0=and';
-  // var book = book;
   // Return a new promise.
   return new Promise(function(resolve, reject) {
     // Do the usual XHR stuff
@@ -176,13 +197,11 @@ function get(book) {
 	  var htmlDoc =parser.parseFromString(req.response, "text/html");
 	  var autolink = htmlDoc.getElementById('autolink');
       if (req.status == 200 ) {
-      	// console.log('200')
         // Resolve the promise with the response text
         if(autolink !== null){
         	resolve(req);	
         }
         else{
-        	// console.log(url);
         	console.log('noautolink');
         	resolve(get(book))
         }
