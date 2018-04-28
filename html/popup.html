@@ -7,24 +7,26 @@
   <script type="text/javascript" src="../script/lib/popper.min.js"></script>
   <script type="text/javascript" src="../script/lib/bootstrap.js"></script>
   <script type="text/javascript" src="../script/lib/papaparse.js"></script>
+  <script type="text/javascript" src="../script/search_helper.js"></script>
   <link rel="stylesheet" type="text/css" href="css/extension.css">
   <link rel="stylesheet" type="text/css" href="../script/lib/bootstrap.min.css">
+
 </head>
 
 <body>
   <ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item">
-      <a class="nav-link active" id="hotkeytable-tab" data-toggle="tab" href="#hotkeytable" role="tab" aria-controls="hotkeytable" aria-selected="true">熱鍵列表</a>
+      <a class="nav-link" id="hotkeytable-tab" data-toggle="tab" href="#hotkeytable" role="tab" aria-controls="hotkeytable" aria-selected="true">熱鍵列表</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" id="uploadcsv-tab" data-toggle="tab" href="#uploadcsv" role="tab" aria-controls="uploadcsv" aria-selected="false">上傳到館預約書</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
+      <a class="nav-link  active" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
     </li>
   </ul>
   <div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
+    <div class="tab-pane fade" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
       <button type="button" id='closebtn' class="close" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
@@ -85,7 +87,7 @@
       <div id='fileContents'></div>
       <script type="text/javascript" src='file.js'></script>
     </div>
-    <div class="tab-pane fade" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
+    <div class="tab-pane fade  show active" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
       <button type="button" id='closebtn1' class="close" aria-label="Close" >
         <span aria-hidden="true">&times;</span>
       </button>
