@@ -2,10 +2,11 @@ chrome.storage.sync.get("reservedbooks", function(items) {
 	if (chrome.runtime.lastError) {
 		console.log('no reservedbooks')
 	} else {
-		function reqListener() {
+		function reqListener(req) {
 			var regex = /(條碼：(.+))，/g;
 			const BarcodeGroupNumber = 2;
 			const IndexofCheckcol = 7;
+			const statuscol = 3;
 			var matches;
 			var anding = /^ED\d{7}/g;
 			while ((matches = regex.exec(this.responseText)) !== null) {
@@ -16,9 +17,20 @@ chrome.storage.sync.get("reservedbooks", function(items) {
 
 				//if the books was arrived, hightlight the row in table
 				var barcode = matches[BarcodeGroupNumber];
-				if (items['reservedbooks'].indexOf(barcode) !== -1 || anding.test(barcode)) {
-					var trs = $("table[class='tab1'] tr").toArray().slice(1, -1);
-					trs[this.index].children[IndexofCheckcol].style.backgroundColor = '#fbff0075';
+				var trs = $("table[class='tab1'] tr").toArray().slice(1, -1);
+				if (items['reservedbooks'].indexOf(barcode) !== -1) {
+					trs[req.target.index].children[IndexofCheckcol].style.backgroundColor = '#fbff0075';
+				}else if(anding.test(barcode)){
+					console.log('hay ED');
+					get_bookpage([barcode],'')
+					.then(function(page){
+						var parser = new DOMParser();
+						var htmlDoc =parser.parseFromString(page.response, "text/html");
+						var tr =  Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr')).filter(function(e){return e.children[0].innerText.trim() == page.book[0]});
+						if(tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '在架'){
+							trs[req.target.index].children[IndexofCheckcol].style.backgroundColor = '#fbff0075';
+						}
+					});
 				}
 			}
 		}
@@ -32,7 +44,7 @@ chrome.storage.sync.get("reservedbooks", function(items) {
 			xhr.open('GET', e);
 			xhr.index = i;
 			xhr.withCredentials = true;
-			xhr.addEventListener("load", reqListener);
+			xhr.onload = reqListener;
 			xhr.send();
 		});
 	}
