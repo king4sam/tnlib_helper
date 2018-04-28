@@ -1,5 +1,6 @@
 var get_bookpage = function(book) {
   const host = 'http:\/\/163.26.71.106\/';
+  const webpac = 'webpac\/';
   const search = 'webpac\/search.cfm'
   const par1 = '?m=ss&k0=';
   const par2 = '&t0=k&c0=and';
@@ -79,7 +80,7 @@ var get_bookpage = function(book) {
 		if(autolink !== null){
 			// resolve(req);
 			var req= new XMLHttpRequest();
-		    req.open('GET', host + autolink.getAttribute('href'));
+		    req.open('GET', host +webpac + autolink.getAttribute('href'));
 		    req.setRequestHeader('Accept','text/html');
 		    req.setRequestHeader('Access-Control-Allow-Origin',searchengin_host);
 		    req.book =  res.target.book;
