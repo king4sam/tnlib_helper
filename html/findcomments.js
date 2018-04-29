@@ -1,4 +1,4 @@
-document.getElementById('closebtn1').addEventListener('click', function() { window.close() });
+document.getElementById('closebtn2').addEventListener('click', function() { window.close() });
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
 chrome.storage.sync.get("sendoutlist", function(books) {
@@ -14,21 +14,56 @@ chrome.storage.sync.get("sendoutlist", function(books) {
 	}
 });
 
+function allProgress(proms, progress_cb) {
+  let d = 0;
+  progress_cb(0);
+  proms.forEach((p) => {
+    p.then(()=> {    
+      d ++;
+      progress_cb( (d * 100) / proms.length );
+    });
+  });
+  return Promise.all(proms);
+}
+
 function file_viewer_load1(event) {
 	var file = document.getElementById('fileForUpload1').files[0]
 	if (file) {
+		var pb = 
+`<div id = "spb_container" class="container">
+  <h4>查詢中，請稍候</h4>
+  <div class="progress">
+    <div id = "spb" class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+      0%
+    </div>
+  </div>
+</div>`;
+		$('#fileConfirm-btn1').after(pb);
+
 		$('#commenttable>tbody').empty();
-		document.getElementById('fileForUpload1')
+		document.getElementById('commenttable').style.display = 'none';
+		document.getElementById('fileForUpload1').style.display = 'none';
+		document.getElementById('fileConfirm-btn1').style.display = 'none';
 		var reader = new FileReader();
 		reader.readAsText(file, "big5");
 		reader.onload = function(evt) {
 			var arys = Papa.parse(evt.target.result)
 			var results = arys.data.slice(6).map(function(e) { return [e[6],e[8]] }).filter(function(e){return undefined !== e[0] && e[0].length !== 0});
-			Promise.all(
+			allProgress(
 				results.map(function(e){
 					return get_bookpage(e)
-				})
-			).then(rendertable);
+				}),(p) => {
+				// console.log(p);
+				$('#spb')[0].style.width = p.toFixed(2) + '%';
+				$('#spb')[0].setAttribute('aria-valuenow',p.toFixed(2));
+				$('#spb')[0].innerText = p.toFixed(2) + '%';
+    			// console.log(`% Done = ${p.toFixed(2)}`);
+			}).then(rendertable);
+			// Promise.all(
+			// 	results.map(function(e){
+			// 		return get_bookpage(e)
+			// 	}).forEach(function(e){ console.log()e.then(1*100/this.length)})
+			// )
 		}
 		reader.onerror = function(evt) {
 			document.getElementById("fileContents").innerHTML = "上傳失敗";
@@ -45,6 +80,7 @@ function add_table_element(book){
 }
 
 function rendertable(pages){
+	$('#spb_container').remove()
 	var books = pages.map(function(page){
 		var parser = new DOMParser();
 		var htmlDoc =parser.parseFromString(page.response, "text/html");
