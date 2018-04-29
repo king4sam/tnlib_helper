@@ -63,6 +63,9 @@ function keydowne(event) {
 			event.preventDefault();
 			window.location = '/toread/circulation/pages/loan_desk';
 			break;
+		case 186: //;
+			event.preventDefault();
+			window.location = '/toread/circulation/exttransit/transit_items_to_send'
 	}
 }
 
