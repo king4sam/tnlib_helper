@@ -1,4 +1,5 @@
 'use strict';
+
 document.addEventListener("keydown", keydowne, true);
 var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
@@ -95,6 +96,24 @@ function keydowne(event) {
 		}
 	}
 	var exttransit_url = new RegExp(host + 'circulation\/exttransit\/required_from_ext_transit*');
+	if (exttransit_url.test(location.href) && document.getElementById('AssignedReports') !== null) {
+		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
+		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
+	}
+}(document));
+
+//search_transactionsReports
+//select default value setup
+(function(document) {
+	function AssignedReportsSetDefault() {
+		try {
+			document.getElementById('PropertySelection_7').selectedIndex = '1';
+			document.getElementById('PropertySelection_8').selectedIndex = '2';
+		} catch (e) {
+			console.log('no AssignedReports');
+		}
+	}
+	var exttransit_url = new RegExp(host + 'circulation\/pages\/search_transactions*');
 	if (exttransit_url.test(location.href) && document.getElementById('AssignedReports') !== null) {
 		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
 		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
