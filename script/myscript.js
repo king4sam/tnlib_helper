@@ -65,8 +65,15 @@ function keydowne(event) {
 			window.location = '/toread/circulation/pages/loan_desk';
 			break;
 		case 186: //;
+			var TransitItemsToBesend = new RegExp(host + 'circulation\/exttransit\/transit_items_to_send');
+			if (TransitItemsToBesend.test(location.href)) {
+				$('#TransferOperation > a')[1].click();
+			}
+			else{
+				window.location = '/toread/circulation/exttransit/transit_items_to_send';	
+			}
 			event.preventDefault();
-			window.location = '/toread/circulation/exttransit/transit_items_to_send'
+			break;
 	}
 }
 
