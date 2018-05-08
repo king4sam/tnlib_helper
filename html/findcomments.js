@@ -1,7 +1,7 @@
 document.getElementById('closebtn2').addEventListener('click', function() { window.close() });
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
-chrome.storage.sync.get("sendoutlist", function(books) {
+chrome.storage.local.get("sendoutlist", function(books) {
 	if (chrome.runtime.lastError ||  undefined === books['sendoutlist'] ) {
 		console.log('no sendoutlist')
 	} else {
@@ -75,7 +75,7 @@ function file_viewer_load1(event) {
 }
 
 function add_table_element(book){
-	var url = 'http://163.26.71.106/webpac/content.cfm?mid=' +book[3][0]+'&m=ss&k0='+book[3][1] + '&t0=k&c0=and&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=&lc=' + book[3][2]
+	var url = 'http://163.26.71.106/webpac/content.cfm?mid=' +book[3][0]+'&m=ss&k0='+book[3][1] + '&t0=k&c0=and&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=&lc=' + book[3][2];
 	$('#commenttable>tbody').append('<tr><th scope="row"><a target = "_blank" href = '+url+'>'+book[0]+'</a></th><td>'+book[1]+'</td><td>'+book[2]+'</td></tr>');
 }
 
@@ -136,7 +136,7 @@ function rendertable(pages){
 
 function storebooks(books){
 	return new Promise(function(resolve, reject) {
-		chrome.storage.sync.set({ "sendoutlist": books }, function() {
+		chrome.storage.local.set({ "sendoutlist": books }, function() {
 			console.log('set');
 			resolve('set');
 		});

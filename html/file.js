@@ -12,7 +12,7 @@ function file_viewer_load(event) {
 			var arys = Papa.parse(evt.target.result);
 			var result = arys.data.filter(record => record[7] === '3-安定區圖書館(BTR)' && record[8].includes('安定')).map(function(e) { return e[9] });
 			console.log(result);
-			chrome.storage.sync.set({ "reservedbooks": result }, function() {
+			chrome.storage.local.set({ "reservedbooks": result }, function() {
 				console.log("set");
 				document.getElementById("fileContents").innerHTML = '更新完成';
 				document.getElementById('fileConfirm-btn').remove();

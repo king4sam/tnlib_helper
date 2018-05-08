@@ -1,4 +1,4 @@
-chrome.storage.sync.get("reservedbooks", function(items) {
+chrome.storage.local.get("reservedbooks", function(items) {
 	if (chrome.runtime.lastError) {
 		console.log('no reservedbooks')
 	} else {
