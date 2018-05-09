@@ -1,19 +1,6 @@
 document.getElementById('closebtn2').addEventListener('click', function() { window.close() });
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
-chrome.storage.local.get("sendoutlist", function(books) {
-	if (chrome.runtime.lastError ||  undefined === books['sendoutlist'] ) {
-		console.log('no sendoutlist')
-	} else {
-		books['sendoutlist'].forEach(function(e){
-			if(e[2].length !== 0){
-				add_table_element(e);
-			}
-		});
-		document.getElementById('commenttable').style.display = 'inline';
-	}
-});
-
 function allProgress(proms, progress_cb) {
   let d = 0;
   progress_cb(0);
@@ -40,8 +27,6 @@ function file_viewer_load1(event) {
 </div>`;
 		$('#fileConfirm-btn1').after(pb);
 
-		$('#commenttable>tbody').empty();
-		document.getElementById('commenttable').style.display = 'none';
 		document.getElementById('fileForUpload1').style.display = 'none';
 		document.getElementById('fileConfirm-btn1').style.display = 'none';
 		var reader = new FileReader();
@@ -59,11 +44,6 @@ function file_viewer_load1(event) {
 				$('#spb')[0].innerText = p.toFixed(2) + '%';
     			// console.log(`% Done = ${p.toFixed(2)}`);
 			}).then(rendertable);
-			// Promise.all(
-			// 	results.map(function(e){
-			// 		return get_bookpage(e)
-			// 	}).forEach(function(e){ console.log()e.then(1*100/this.length)})
-			// )
 		}
 		reader.onerror = function(evt) {
 			document.getElementById("fileContents").innerHTML = "上傳失敗";
@@ -72,11 +52,6 @@ function file_viewer_load1(event) {
 	else{
 		console.log('no file selected');
 	}
-}
-
-function add_table_element(book){
-	var url = 'http://163.26.71.106/webpac/content.cfm?mid=' +book[3][0]+'&m=ss&k0='+book[3][1] + '&t0=k&c0=and&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=&lc=' + book[3][2];
-	$('#commenttable>tbody').append('<tr><th scope="row"><a target = "_blank" href = '+url+'>'+book[0]+'</a></th><td>'+book[1]+'</td><td>'+book[2]+'</td></tr>');
 }
 
 function rendertable(pages){
@@ -120,16 +95,10 @@ function rendertable(pages){
 		return a[1].length - b[1].length;
 	});
 
-	juniorbooks.forEach(function(e){
-		if(e[2].length !== 0){
-			add_table_element(e);
-		}
-	});
-
-	document.getElementById('fileConfirm-btn1').remove();
-	document.getElementById('fileForUpload1').remove();
+	document.getElementById('fileConfirm-btn1').style.display = 'inline-block';
+	document.getElementById('fileForUpload1').style.display = 'inline-block';
 	document.getElementById('closebtn1').style.display = 'inline';
-	document.getElementById('commenttable').style.display = 'inline';
+	document.getElementById('commenttable').style.display = 'table';
 
 	return storebooks(juniorbooks);
 }
@@ -138,6 +107,7 @@ function storebooks(books){
 	return new Promise(function(resolve, reject) {
 		chrome.storage.local.set({ "sendoutlist": books }, function() {
 			console.log('set');
+			$('#booktable-tab').click();
 			resolve('set');
 		});
 	});
