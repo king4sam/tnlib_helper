@@ -1,3 +1,23 @@
+Object.defineProperty(Promise, 'retry', {
+  configurable: true,
+  writable: true,
+  value: function retry (retries, executor) {
+    // console.log(`${retries} retries left!`)
+
+    if (typeof retries !== 'number') {
+      throw new TypeError('retries is not a number')
+    }
+
+    const promise = new Promise(executor)
+
+    if (retries > 0) {
+      return promise.catch(error => Promise.retry(--retries, executor))
+    }
+
+    return promise
+  }
+})
+
 var get_bookpage = function(book) {
 	const host = 'http:\/\/163.26.71.106\/';
 	const webpac = 'webpac\/';
