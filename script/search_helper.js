@@ -118,7 +118,15 @@ var get_bookpage = function(book) {
 
 			var autolink_response_handler = function(res) {
 				if (res.target.status == 200) {
-					resolve(res.target);
+					var parser = new DOMParser();
+					var htmlDoc = parser.parseFromString(res.target.response, "text/html");
+					if( undefined !== htmlDoc.getElementsByTagName('h2')[1] ){
+						resolve(res.target);
+					}
+					else{
+						resolve(get_bookpage(res.target.book));
+					}
+					
 				} else {
 					// Otherwise reject with the status text
 					// which will hopefully be a meaningful error
