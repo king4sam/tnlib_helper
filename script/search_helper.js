@@ -1,4 +1,4 @@
-const max_Retry = 3;
+const max_Retry = 10;
 const host = 'http:\/\/163.26.71.106\/';
 const webpac = 'webpac\/';
 const search = 'webpac\/search.cfm'
@@ -6,14 +6,14 @@ const par1 = '?m=ss&k0=';
 const par2 = '&t0=k&c0=and';
 const searchengin_host = 'http://163.26.71.106';
 
-var checkerrpage = function(htmlDoc){
+var iserrpage = function(htmlDoc){
 	var err = htmlDoc.querySelectorAll('img[alt="error_refresh"]');
 	if(err.length > 0){
 		console.log('pageerr')
-		return false;
+		return true;
 	}
 	else{
-		return true;
+		return false;
 	}
 }
 
@@ -47,7 +47,7 @@ var tnlib_xmlget_init = function(url, book) {
 }
 
 var nextpage_promise = function(link,book){
-	// console.log(link);
+	console.log(link);
 	return new Promise(function(resolve,reject){
 		if(link == '#'){
 			console.log('booknotfound: ' + book[0]);
@@ -62,14 +62,15 @@ var nextpage_promise = function(link,book){
 				if (res.target.status == 200) {
 					var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
 					var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
-					if(checkerrpage(htmlDoc)){
+					if(iserrpage(htmlDoc)){
 						// reject(Error('errpage'));
 						console.log('errpage')
 						console.log(res.target.responseURL)
+						reject(Error('errpage'));
 					}
-					if(links.length === 0){
-						reject(Error('nolinks'));
-					}
+					// if(links.length === 0){
+					// 	reject(Error('nolinks'));
+					// }
 					var nextlink = links[links.length-1].getAttribute('href');
 					var tr = get_booktrs(htmlDoc,res.target.book);
 					if (tr.length !== 0) {
@@ -98,18 +99,20 @@ var get_booktrs = function(htmlDoc, book){
 }
 
 var normalautolink_promise = function(res) {
-	return new Promise(function(resolve, reject) {
+	return Promise.retry(max_Retry, function(resolve, reject) {
 		if (res.target.status == 200) {
 			var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-			if(checkerrpage(htmlDoc)){
+			if(iserrpage(htmlDoc)){
 				// reject(Error('errpage'));
-						console.log('errpage');
-						console.log(res.target.responseURL)
+				// console.log('errpage');
+				// console.log(res.target.responseURL)
+				reject(Error('errpage'));
 			}
 			var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
 			var tr = get_booktrs(htmlDoc,res.target.book);
 			var bookname = htmlDoc.getElementsByTagName('h2')[1];
 			var nextlink = links[links.length-1].getAttribute('href');
+			console.log(nextlink);
 			if (tr.length !== 0) {
 				resolve(res.target);
 			} else {
@@ -134,17 +137,16 @@ var normalsearch_promise = function(res) {
 		var autolink_response_handler = function(res) {
 			if (res.target.status == 200) {
 				var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-				if(checkerrpage(htmlDoc)){
+				if(iserrpage(htmlDoc)){
 					// reject(Error('errpage'));
 						console.log('errpage');
 						console.log(res.target.responseURL)
 				}
-				resolve(normalautolink_promise(res));
+				resolve(res);
 			} else {
 				reject(Error('Network Error'));
 			}
 		}
-
 		req.onload = autolink_response_handler;
 		req.send();
 	})
@@ -157,15 +159,17 @@ var get_bookpage = function(book) {
 			var htmlDoc = parser.parseFromString(res.target.response, "text/html");
 			var autolink = htmlDoc.getElementById('autolink');
 			if (res.target.status == 200) {
-				// Resolve the promise with the response text
-				if (autolink !== null) {
-					resolve(normalsearch_promise(res));
-				} else {
-					console.log('no autolink');
+				if( iserrpage(htmlDoc) || autolink === null){
+					// reject(Error('errpage'));
+					// console.log('errpage');
+					// console.log(res.target.responseURL);
 					reject('noautolink');
-					// resolve(get_bookpage(res.target.book));
 				}
-
+				else{
+					resolve(res);
+				}
+				// Resolve the promise with the response text
+				
 			} else {
 				reject(Error('Network Error'));
 			}
@@ -178,5 +182,11 @@ var get_bookpage = function(book) {
 		};
 
 		req.send();
+	}).then(normalsearch_promise)
+	.then(normalautolink_promise)
+	.catch(err=>{
+		// console.log('caught ') ; 
+		// console.log(err);
+		return 'errpage';
 	});
 }
