@@ -16,6 +16,7 @@ helper chrome extension for Tainan Public Libraries
 |清除		|	\\	|
 |聚焦證號欄	|	]	|
 |借還書作業	|	'	|
+|	移轉寄送|	;	|
 
 ## 2. Default value setup
 
