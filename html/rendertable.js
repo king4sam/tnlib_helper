@@ -6,6 +6,7 @@ function drawtable(){
 			console.log('no sendoutlist')
 		} else {
 			$('#commenttable>tbody').empty();
+			$('#ctcap').empty = '';
 			results['sendoutlist']['books'].forEach(function(e){
 				if(e[2].length !== 0){
 					add_table_element(e);
