@@ -23,9 +23,6 @@
     <li class="nav-item">
       <a class="nav-link" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" id="uploadcsv-tab" data-toggle="tab" href="#uploadcsv" role="tab" aria-controls="uploadcsv" aria-selected="false">上傳到館預約書</a>
-    </li>
   </ul>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade  show active" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
@@ -79,18 +76,8 @@
         </tbody>
       </table>
     </div>
-    <div class="tab-pane fade" id="uploadcsv" role="tabpanel" aria-labelledby="uploadcsv-tab">
-      <button type="button" id='closebtn1' class="close" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <input type="file" id="fileForUpload">
-      <div id='fileContents'></div>
-      <button id="fileConfirm-btn">確認上傳</button>
-      <div id='fileContents'></div>
-      <script type="text/javascript" src='file.js'></script>
-    </div>
     <div class="tab-pane fade" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
-      <button type="button" id='closebtn2' class="close" aria-label="Close">
+      <button type="button" id='closebtn1' class="close" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
       <input type="file" id="fileForUpload1">
@@ -103,6 +90,7 @@
         <span aria-hidden="true">&times;</span>
       </button>
       <table id='commenttable' class="table table-striped" style="display: none">
+        <caption id='ctcap'></caption>
         <thead>
           <tr>
             <th scope="col">條碼號</th>
@@ -115,6 +103,7 @@
       </table>
       <script type="text/javascript" src='rendertable.js'></script>
     </div>
+    <script type="text/javascript" src='popup_general.js'></script>
 </body>
 
 </html>
