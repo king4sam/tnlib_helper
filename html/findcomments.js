@@ -1,4 +1,3 @@
-document.getElementById('closebtn2').addEventListener('click', function() { window.close() });
 document.getElementById('fileConfirm-btn1').addEventListener('click', file_viewer_load1);
 
 function allProgress(proms, progress_cb) {
@@ -57,10 +56,13 @@ function file_viewer_load1(event) {
 function rendertable(pages){
 	$('#spb_container').remove()
 	var books = pages.map(function(page){
+		// console.log(page);
+		// console.log(page.responseURL);
 		var parser = new DOMParser();
 		var htmlDoc =parser.parseFromString(page.response, "text/html");
 		var extract = function(responseURL){
-			var regex = /http:\/\/163\.26\.71\.106\/webpac\/content\.cfm\?mid=(\d+)&m=ss&k0=(ED\d+)&t0=k&c0=and&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=&lc=(\d+)/g;
+			//content.cfm?mid=281325&m=ss&k0=ED0042189&t0=k&c0=and&si=&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=1&contentlistcurrent_page=2&contentlist_num=10&lc=0&ye=&vo=&item_status_v=
+			var regex = /http:\/\/163\.26\.71\.106\/webpac\/content\.cfm\?mid=(\d+)&m=ss&k0=([A-Z]{2}\d+|\d+)&t0=k&c0=and&list_num=10&current_page=(\d+)&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=/gm;;
 			var m;
 			while ((m= regex.exec(responseURL)) !== null) {
 			    // This is necessary to avoid infinite loops with zero-width matches
@@ -69,6 +71,37 @@ function rendertable(pages){
 			    }
 			    
 			    // The result can be accessed through the `m`-variable.
+			   
+			    return m.slice(1);
+			}
+		}
+		var extract1 = function(responseURL){
+			//content.cfm?mid=281325&m=ss&k0=ED0042189&t0=k&c0=and&si=&list_num=10&current_page=1&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=1&contentlistcurrent_page=2&contentlist_num=10&lc=0&ye=&vo=&item_status_v=
+			var regex1 = /http:\/\/163\.26\.71\.106\/webpac\/content\.cfm\?mid=(\d+)&m=ss&k0=([A-Z]{2}\d+|\d+)&t0=k&c0=and&list_num=10&current_page=(\d+)&mt=&at=&sj=&py=&pr=&it=&lr=&lg=&si=1&contentlistcurrent_page=(\d+)&contentlist_num=10&lc=0&ye=&vo=&item_status_v=/gm;
+			var m1;
+			while ((m1= regex1.exec(responseURL)) !== null) {
+			    // This is necessary to avoid infinite loops with zero-width matches
+			    if (m.index === regex.lastIndex) {
+			        regex.lastIndex++;
+			    }
+			    
+			    // The result can be accessed through the `m`-variable.
+			    if(m1.length > 0)
+			    	return m1.slice(1);
+			}
+
+		}
+		var extract2 = function(responseURL){
+			const regex = /http:\/\/163\.26\.71\.106\/webpac\/content\.cfm\?mid=(\d+)&m=ss&k0=([A-Z]{2}\d+|\d+)&t0=k&c0=and/gm;
+			var m;
+			while ((m= regex.exec(responseURL)) !== null) {
+			    // This is necessary to avoid infinite loops with zero-width matches
+			    if (m.index === regex.lastIndex) {
+			        regex.lastIndex++;
+			    }
+			    
+			    // The result can be accessed through the `m`-variable.
+			   
 			    return m.slice(1);
 			}
 		}
@@ -76,10 +109,10 @@ function rendertable(pages){
 		.filter(function(e){return e.children[0].innerText.trim() == page.book[0]});
 		
 		if(tr.length !== 0 && tr[0].children[8].innerText.trim().length > 0){
-			return [page.book[0],page.book[1],tr[0].children[8].innerText.trim(),extract(page.responseURL)]
+			return [page.book[0],page.book[1],tr[0].children[8].innerText.trim(),extract(page.responseURL)||extract1(page.responseURL)||extract2(page.responseURL) ]
 		}
 		else{
-			return [page.book[0],page.book[1],'',extract(page.responseURL)];
+			return [page.book[0],page.book[1],'',extract(page.responseURL)||extract1(page.responseURL)||extract2(page.responseURL)];
 		}
 	});
 
@@ -94,6 +127,8 @@ function rendertable(pages){
 		}
 		return a[1].length - b[1].length;
 	});
+
+	console.log(juniorbooks);
 
 	document.getElementById('fileConfirm-btn1').style.display = 'inline-block';
 	document.getElementById('fileForUpload1').style.display = 'inline-block';
