@@ -44,6 +44,9 @@ chrome.storage.local.get("reservedbooks", function(items) {
 						if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '在架') {
 							popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '在架' });
 						}
+						else{
+							popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '未到' });
+						}
 					}
 					else{
 						if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '預約保留') {
