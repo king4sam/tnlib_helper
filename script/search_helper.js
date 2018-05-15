@@ -1,10 +1,21 @@
-const max_Retry = 10;
+const max_Retry = 3;
 const host = 'http:\/\/163.26.71.106\/';
 const webpac = 'webpac\/';
 const search = 'webpac\/search.cfm'
 const par1 = '?m=ss&k0=';
 const par2 = '&t0=k&c0=and';
 const searchengin_host = 'http://163.26.71.106';
+
+var checkerrpage = function(htmlDoc){
+	var err = htmlDoc.querySelectorAll('img[alt="error_refresh"]');
+	if(err.length > 0){
+		console.log('pageerr')
+		return false;
+	}
+	else{
+		return true;
+	}
+}
 
 Object.defineProperty(Promise, 'retry', {
 	configurable: true,
@@ -35,47 +46,84 @@ var tnlib_xmlget_init = function(url, book) {
 	return req;
 }
 
-var autolink_promise = function(res) {
-	return Promise.retry(max_Retry, function(resolve, reject) {
-		var parser = new DOMParser();
-		var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-		var holdingLocations = htmlDoc.getElementById("holdingLocations");
-		var vals = Array.apply(null, holdingLocations).filter(e => e.innerText.includes('安定'));
-		var lc = vals[0].value
-
-		var req = tnlib_xmlget_init(res.target.responseURL + '&lc=' + lc, res.target.book);
-		var bookpage_response_handler = function(res) {
-			var parser = new DOMParser();
-			var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-			if (res.target.status == 200) {
-				var tr = Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr')); //.filter(function(e){return e.children[0].innerText.trim() == req.book[0]});
-				if (tr.length !== 0) {
-					resolve(res.target);
-				} else {
-					console.log(res.target);
-					console.log(res);
-					console.log('tr=0');
-					// reject('tr=0');
-					resolve(get_bookpage(res.target.book))
+var nextpage_promise = function(link,book){
+	// console.log(link);
+	return new Promise(function(resolve,reject){
+		if(link == '#'){
+			console.log('booknotfound: ' + book[0]);
+			// console.log('notfound');
+			resolve('booknotfound');
+		}else{
+			var req = tnlib_xmlget_init(host + webpac + link, book);
+			req.onerror = function() {
+				reject(Error("Network Error"));
+			};
+			var nextpage_response_handler = function(res){
+				if (res.target.status == 200) {
+					var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
+					var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
+					if(checkerrpage(htmlDoc)){
+						// reject(Error('errpage'));
+						console.log('errpage')
+						console.log(res.target.responseURL)
+					}
+					if(links.length === 0){
+						reject(Error('nolinks'));
+					}
+					var nextlink = links[links.length-1].getAttribute('href');
+					var tr = get_booktrs(htmlDoc,res.target.book);
+					if (tr.length !== 0) {
+						resolve(res.target);
+					}else {
+						resolve(nextpage_promise(nextlink,book));
+					}
 				}
-			} else {
-				reject(Error('Network Error'));
 			}
+
+			req.onload = nextpage_response_handler;
+			req.send();
 		}
-		req.onload = bookpage_response_handler;
-
-		req.onerror = function() {
-			reject(Error("Network Error"));
-		};
-
-		req.send();
 	})
 }
 
-var search_promise = function(res) {
+var get_booktrs = function(htmlDoc, book){
+	if( htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr').length === 0)
+		return null;
+	else{
+		return Array.from(htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
+			.filter(function(e){
+				return e.children[0].innerText.trim() == book[0]
+			});
+	}
+}
+
+var normalautolink_promise = function(res) {
+	return new Promise(function(resolve, reject) {
+		if (res.target.status == 200) {
+			var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
+			if(checkerrpage(htmlDoc)){
+				// reject(Error('errpage'));
+						console.log('errpage');
+						console.log(res.target.responseURL)
+			}
+			var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
+			var tr = get_booktrs(htmlDoc,res.target.book);
+			var bookname = htmlDoc.getElementsByTagName('h2')[1];
+			var nextlink = links[links.length-1].getAttribute('href');
+			if (tr.length !== 0) {
+				resolve(res.target);
+			} else {
+				resolve(nextpage_promise(nextlink,res.target.book));
+			}
+		} else {
+			reject(Error('Network Error'));
+		}
+	})
+}
+
+var normalsearch_promise = function(res) {
 	return Promise.retry(max_Retry, function(resolve, reject) {
-		var parser = new DOMParser();
-		var htmlDoc = parser.parseFromString(res.target.response, "text/html");
+		var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
 		var autolink = htmlDoc.getElementById('autolink');
 
 		var req = tnlib_xmlget_init(host + webpac + autolink.getAttribute('href'), res.target.book);
@@ -85,16 +133,13 @@ var search_promise = function(res) {
 
 		var autolink_response_handler = function(res) {
 			if (res.target.status == 200) {
-				var parser = new DOMParser();
-				var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-				var holdingLocations = htmlDoc.getElementById("holdingLocations");
-				if (holdingLocations !== null) {
-					resolve(autolink_promise(res));
-				} else {
-					console.log('nolocation');
-					// reject('nolocation')
-					resolve(get_bookpage(res.target.book))
+				var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
+				if(checkerrpage(htmlDoc)){
+					// reject(Error('errpage'));
+						console.log('errpage');
+						console.log(res.target.responseURL)
 				}
+				resolve(normalautolink_promise(res));
 			} else {
 				reject(Error('Network Error'));
 			}
@@ -106,90 +151,32 @@ var search_promise = function(res) {
 }
 
 var get_bookpage = function(book) {
-	if (book[0].substr(0, 2) === 'ED') {
-		return Promise.retry(max_Retry, function(resolve, reject) {
-
-			var search_response_handler = function(res) {
-				var parser = new DOMParser();
-				var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-				var autolink = htmlDoc.getElementById('autolink');
-				if (res.target.status == 200) {
-					// Resolve the promise with the response text
-					if (autolink !== null) {
-						resolve(search_promise(res));
-					} else {
-						reject('noautolink');
-						// resolve(get_bookpage(res.target.book));
-					}
-
+	return Promise.retry(max_Retry, function(resolve, reject) {
+		var search_response_handler = function(res) {
+			var parser = new DOMParser();
+			var htmlDoc = parser.parseFromString(res.target.response, "text/html");
+			var autolink = htmlDoc.getElementById('autolink');
+			if (res.target.status == 200) {
+				// Resolve the promise with the response text
+				if (autolink !== null) {
+					resolve(normalsearch_promise(res));
 				} else {
-					reject(Error('Network Error'));
+					console.log('no autolink');
+					reject('noautolink');
+					// resolve(get_bookpage(res.target.book));
 				}
+
+			} else {
+				reject(Error('Network Error'));
 			}
-			var req = tnlib_xmlget_init(host + search + par1 + book[0] + par2, book);
-			req.onload = search_response_handler;
+		}
+		var req = tnlib_xmlget_init(host + search + par1 + book[0] + par2, book);
+		req.onload = search_response_handler;
 
-			req.onerror = function() {
-				reject(Error("Network Error"));
-			};
+		req.onerror = function() {
+			reject(Error("Network Error"));
+		};
 
-			req.send();
-		});
-	} else {
-		return Promise.retry(max_Retry, function(resolve, reject) {
-
-			var autolink_response_handler = function(res) {
-				if (res.target.status == 200) {
-					var parser = new DOMParser();
-					var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-					var bookname = htmlDoc.getElementsByTagName('h2')[1];
-					if (undefined !== bookname) {
-						resolve(res.target);
-					} else {
-						reject('nobookname');
-					}
-				} else {
-					reject(Error('Network Error'));
-				}
-			}
-
-			var search_response_handler = function(res) {
-				var parser = new DOMParser();
-				var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-				var autolink = htmlDoc.getElementById('autolink');
-				if (res.target.status == 200) {
-					if (autolink !== null) {
-						// resolve(req);
-						var req = new XMLHttpRequest();
-						req.open('GET', host + webpac + autolink.getAttribute('href'));
-						req.setRequestHeader('Accept', 'text/html');
-						req.setRequestHeader('Access-Control-Allow-Origin', searchengin_host);
-						req.book = res.target.book;
-						req.onload = autolink_response_handler;
-
-						req.onerror = function() {
-							reject(Error("Network Error"));
-						};
-
-						req.send();
-					} else {
-						// resolve(get_bookpage(res.target.book));
-						reject('noautolink');
-					}
-
-				} else {
-					reject(Error('Network Error'));
-				}
-			}
-			var req = tnlib_xmlget_init(host + search + par1 + book[0] + par2, book);
-			req.onload = search_response_handler;
-
-			req.onerror = function() {
-				reject(Error("Network Error"));
-			};
-
-			req.send();
-		});
-	}
-
+		req.send();
+	});
 }
