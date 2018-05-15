@@ -54,8 +54,11 @@ function file_viewer_load1(event) {
 }
 
 function rendertable(pages){
-	$('#spb_container').remove()
-	var books = pages.map(function(page){
+	console.log(pages);
+	$('#spb_container').remove();
+	var found_pages = pages.filter(p=>{return p !== 'booknotfound' && p !== 'errpage'});
+	console.log(found_pages);
+	var books = found_pages.map(function(page){
 		// console.log(page);
 		// console.log(page.responseURL);
 		var parser = new DOMParser();
