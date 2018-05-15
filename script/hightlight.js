@@ -23,21 +23,14 @@ chrome.storage.local.get("reservedbooks", function(items) {
 			}
 
 			var bookrequests= barcodes.map(function(barcode){
-				if (items['reservedbooks'].indexOf(barcode) !== -1) {
+				if (anding.test(barcode)) {
 					return get_bookpage([barcode])
 						.then(function(page) {
-							var parser = new DOMParser();
-							var htmlDoc = parser.parseFromString(page.response, "text/html");
-							var bookname = htmlDoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
-							popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '預約保留' });
-						});
-				}
-				else if (anding.test(barcode)) {
-					get_bookpage([barcode])
-						.then(function(page) {
-							var parser = new DOMParser();
-							var htmlDoc = parser.parseFromString(page.response, "text/html");
-							var tr = Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr')).filter(function(e) { return e.children[0].innerText.trim() == page.book[0] });
+							var htmlDoc = new DOMParser().parseFromString(page.response, "text/html");
+							var tr = Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
+							.filter(function(e) {
+								return e.children[0].innerText.trim() == page.book[0] 
+							});
 							var bookname = htmlDoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
 							if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '在架') {
 								popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '在架' });
@@ -45,24 +38,31 @@ chrome.storage.local.get("reservedbooks", function(items) {
 						},(err) => {
 							console.log('catch : ' + err);
 						});
-				}
-				else{
-					get_bookpage([barcode])
-					.then(function(page) {
-						var parser = new DOMParser();
-						var htmlDoc = parser.parseFromString(page.response, "text/html");
-						var bookname = htmlDoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
-						popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '未到' });
-					},(err) => {
-						console.log('catch : ' + err);
-					});
+				}else{
+					return get_bookpage([barcode])
+						.then(function(page) {
+							var htmlDoc = new DOMParser().parseFromString(page.response, "text/html");
+							var tr = Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
+							.filter(function(e) {
+								return e.children[0].innerText.trim() == page.book[0] 
+							});
+							var bookname = htmlDoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
+							if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '預約保留') {
+								popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '預約保留' });
+							}
+							else {
+								popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '未到' });	
+							}
+						});
 				}
 			});
 			Promise.all(bookrequests)
 			.then(function(){
 				if (popover_content_ary.filter(function(e){
-					return e['status'] !== '';
+					return e['status'] !== '未到';
 				}).length > 0) {
+					console.log(trs);
+					console.log(req.target.index);
 					trs[req.target.index].children[IndexofCheckcol-1].style.backgroundColor = '#fbff0075';
 				}
 				var tdele = trs[req.target.index].children[IndexofCheckcol-1];
@@ -81,26 +81,6 @@ chrome.storage.local.get("reservedbooks", function(items) {
 					}
 				});
 			})
-
-			if (popover_content_ary.length > 0) {
-				trs[req.target.index].children[IndexofCheckcol].style.backgroundColor = '#fbff0075';
-				var tdele = trs[req.target.index].children[IndexofCheckcol];
-				$(tdele).popover({
-					toggle: 'popover',
-					html: true,
-					trigger: 'hover',
-					container: 'body',
-					placement: 'bottom',
-					content: function() {
-						return '<table>' + 
-						popover_content_ary.reduce(function(a, c) { 
-							return a + "<tr><td>" + c['bookname'] + '</td><td>' + c['barcode'] + "</td><td>" + c['status'] + "</td></tr>" }
-							, "") 
-						+ '</table>';
-					}
-				});
-			}
-
 		}
 
 		//parse urls for reservations
