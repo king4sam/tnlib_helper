@@ -139,8 +139,14 @@ function rendertable(pages){
 }
 
 function storebooks(books){
+	var sendoutlist = {'updatetime' : new Date().toString(),
+					   'books' :books,
+					   'filename' : document.getElementById('fileForUpload1').files[0]['name']
+					   }
+
+	console.log(sendoutlist);
 	return new Promise(function(resolve, reject) {
-		chrome.storage.local.set({ "sendoutlist": books }, function() {
+		chrome.storage.local.set({ "sendoutlist": sendoutlist }, function() {
 			console.log('set');
 			$('#booktable-tab').click();
 			resolve('set');
