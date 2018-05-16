@@ -179,3 +179,17 @@ function keydowne(event) {
 		TransactionsObserber.observe(document.getElementById('TransactionsContent'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
 }(document, location, $));
+
+// print view modify
+(function(document, $){
+	var modify_printview = function(records) {
+		if($('#HoldSlipPrintContent').length !== 0){
+			$('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', "large");
+			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br>\s*<br>/g, "<br>")
+			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '2em')
+			$('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML = $('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML.replace(/<span/g, "<div").replace(/<\/span/g, "<\/div");
+		}
+	};
+	var PrintContentObserber = new MutationObserver(modify_printview);
+	PrintContentObserber.observe(document.getElementById('TransactionsContent'), {'childList': true});
+}(document, $))
