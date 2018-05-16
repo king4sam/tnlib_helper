@@ -182,14 +182,20 @@ function keydowne(event) {
 
 // print view modify
 (function(document, $){
+	console.log('hi');
 	var modify_printview = function(records) {
+		console.log('yo');
 		if($('#HoldSlipPrintContent').length !== 0){
+			console.log('change');
 			$('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', "large");
+			$('#HoldSlipPrintContent strong').css('font-size', "medium");
 			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br>\s*<br>/g, "<br>")
 			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '2em')
 			$('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML = $('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML.replace(/<span/g, "<div").replace(/<\/span/g, "<\/div");
+			$('#HoldSlipPrintContent > p:nth-child(2) > br').remove();
 		}
 	};
 	var PrintContentObserber = new MutationObserver(modify_printview);
-	PrintContentObserber.observe(document.getElementById('TransactionsContent'), {'childList': true});
+	var obtarget = document.getElementById('TransactionsContent') || document.getElementById('TransactionsDesk');
+	PrintContentObserber.observe(obtarget, {'childList': true});
 }(document, $))
