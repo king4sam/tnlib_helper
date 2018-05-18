@@ -186,16 +186,16 @@ function keydowne(event) {
 	var modify_printview = function(records) {
 		console.log('yo');
 		if($('#HoldSlipPrintContent').length !== 0){
-			console.log('change');
+			console.log($('#HoldSlipPrintContent'));
 			$('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', "large");
-			$('#HoldSlipPrintContent strong').css('font-size', "medium");
-			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br>\s*<br>/g, "<br>")
-			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '2em')
-			$('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML = $('#HoldSlipPrintContent > p:nth-child(2)')[0].innerHTML.replace(/<span/g, "<div").replace(/<\/span/g, "<\/div");
-			$('#HoldSlipPrintContent > p:nth-child(2) > br').remove();
+			$('#HoldSlipPrintContent strong').css('font-size', "small");
+			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br.*>(\s*<br>)*/g, "<br>")
+			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '1.9em')
+			$('#HoldSlipPrintContent > p:nth-child(2) > span:nth-child(2)').remove();
 		}
 	};
 	var PrintContentObserber = new MutationObserver(modify_printview);
 	var obtarget = document.getElementById('TransactionsContent') || document.getElementById('TransactionsDesk');
 	PrintContentObserber.observe(obtarget, {'childList': true});
 }(document, $))
+
