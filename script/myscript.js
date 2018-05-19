@@ -189,8 +189,9 @@ function keydowne(event) {
 			console.log($('#HoldSlipPrintContent'));
 			$('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', "large");
 			$('#HoldSlipPrintContent strong').css('font-size', "small");
-			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br.*>(\s*<br>)*/g, "<br>")
-			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '1.9em')
+			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br.*>(\s*<br>)*/g, "<br>");
+			$('#HoldSlipPrintContent')[0].innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<p>&nbsp;<\/p>/g, "");
+			$('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '1.9em');
 			$('#HoldSlipPrintContent > p:nth-child(2) > span:nth-child(2)').remove();
 		}
 	};
@@ -198,4 +199,5 @@ function keydowne(event) {
 	var obtarget = document.getElementById('TransactionsContent') || document.getElementById('TransactionsDesk');
 	PrintContentObserber.observe(obtarget, {'childList': true});
 }(document, $))
+
 
