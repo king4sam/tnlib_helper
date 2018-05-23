@@ -1,5 +1,55 @@
 'use strict';
 
+chrome.storage.local.get("selects", function(results) {
+	if (chrome.runtime.lastError || undefined === results['selects']) {
+		console.log('no selects');
+	} else if (results['selects']['status'] === 'lock') {
+		document.getElementById("PropertySelection_0").value = results['selects']['setting']['PropertySelection_0'];
+		document.getElementById("itemCurrentStatusSelection").value = results['selects']['setting']['itemCurrentStatusSelection']
+	}
+});
+
+let seletcObserber;
+
+chrome.runtime.onMessage.addListener(
+	function(request, sender, sendResponse) {
+		console.log(sender.tab ?
+			"from a content script:" + sender.tab.url :
+			"from the extension");
+		var setselect = function(cursta, proper) {
+			return function(records) {
+				$('#itemCurrentStatusSelection')[0].value = cursta;
+				$('#PropertySelection_0')[0].value = proper;
+			}
+		};
+
+		var obtarget = document.getElementById('HiddenBrowse');
+		if (request.query == "selects") {
+			console.log("selects");
+			var arys = []
+			arys.push(document.getElementById("itemCurrentStatusSelection").outerHTML);
+			arys.push(document.getElementById("PropertySelection_0").outerHTML);
+			sendResponse({ selects: arys });
+		} else if (request.query == "lock") {
+			if (seletcObserber !== undefined)
+				seletcObserber.disconnect();
+			seletcObserber = new MutationObserver(
+				setselect(request.setting.itemCurrentStatusSelection, request.setting.PropertySelection_0)
+			)
+			document.getElementById("PropertySelection_0").value = request.setting.PropertySelection_0;
+			document.getElementById("itemCurrentStatusSelection").value = request.setting.itemCurrentStatusSelection;
+			seletcObserber.observe(obtarget, { 'childList': true });
+			console.log("lock");
+			console.log(request.setting);
+			sendResponse({ status: "OK" });
+		} else if (request.query == "release") {
+			if (seletcObserber !== undefined)
+				seletcObserber.disconnect();
+			console.log("release");
+			sendResponse({ status: "OK" });
+		}
+	});
+
 document.addEventListener("keydown", keydowne, true);
 var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
@@ -68,9 +118,8 @@ function keydowne(event) {
 			var TransitItemsToBesend = new RegExp(host + 'circulation\/exttransit\/transit_items_to_send');
 			if (TransitItemsToBesend.test(location.href)) {
 				$('#TransferOperation > a')[1].click();
-			}
-			else{
-				window.location = '/toread/circulation/exttransit/transit_items_to_send';	
+			} else {
+				window.location = '/toread/circulation/exttransit/transit_items_to_send';
 			}
 			event.preventDefault();
 			break;
@@ -181,11 +230,11 @@ function keydowne(event) {
 }(document, location, $));
 
 // print view modify
-(function(document, $){
+(function(document, $) {
 	console.log('hi');
 	var modify_printview = function(records) {
 		console.log('yo');
-		if($('#HoldSlipPrintContent').length !== 0){
+		if ($('#HoldSlipPrintContent').length !== 0) {
 			console.log($('#HoldSlipPrintContent'));
 			$('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', "large");
 			$('#HoldSlipPrintContent strong').css('font-size', "small");
