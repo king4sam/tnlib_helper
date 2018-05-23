@@ -244,9 +244,9 @@ function keydowne(event) {
 			$('#HoldSlipPrintContent > p:nth-child(2) > span:nth-child(2)').remove();
 		}
 	};
-	var PrintContentObserber = new MutationObserver(modify_printview);
+	var PrintContentObserver = new MutationObserver(modify_printview);
 	var obtarget = document.getElementById('TransactionsContent') || document.getElementById('TransactionsDesk');
-	PrintContentObserber.observe(obtarget, {'childList': true});
+	if (null !== obtarget) {
+		PrintContentObserver.observe(obtarget, { 'childList': true });
+	}
 }(document, $))
-
-
