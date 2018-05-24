@@ -20,13 +20,13 @@
       <a class="nav-link active" id="hotkeytable-tab" data-toggle="tab" href="#hotkeytable" role="tab" aria-controls="hotkeytable" aria-selected="true">熱鍵列表</a>
     </li>
     <li class="nav-item">
+      <a class="nav-link" id="select-tab" data-toggle="tab" href="#select" role="tab" aria-controls="select" aria-selected="false">下拉式選單鎖定</a>
+    </li>
+    <li class="nav-item">
       <a class="nav-link" id="booktable-tab" data-toggle="tab" href="#booktable" role="tab" aria-controls="booktable" aria-selected="false">預約清單</a>
     </li>
     <li class="nav-item">
       <a class="nav-link" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="select-tab" data-toggle="tab" href="#select" role="tab" aria-controls="select" aria-selected="false">選單鎖定</a>
     </li>
   </ul>
   <div class="tab-content" id="myTabContent">
@@ -52,7 +52,7 @@
           </tr>
           <tr>
             <th scope="row">確定</th>
-            <td>C</td>
+            <td>Y</td>
           </tr>
           <tr>
             <th scope="row">取消</th>
@@ -64,7 +64,7 @@
           </tr>
           <tr>
             <th scope="row">關閉</th>
-            <td>X</td>
+            <td>C</td>
           </tr>
           <tr>
             <th scope="row">聚焦證號欄</th>
@@ -113,7 +113,7 @@
       <script type="text/javascript" src='rendertable.js'></script>
     </div>
     <div class="tab-pane fade" id="select" role="tabpanel" aria-labelledby="select-tab">
-      <div id = "selectscontainer">	
+      <div id = "selectscontainer" display = "block" >	
       		<input type="checkbox" data-onstyle="success" data-offstyle="danger" data-width="100" id="selectlocker" checked data-toggle="toggle" data-on = "鎖定" data-off = "未鎖定">
           <div id="selects"></div>
       </div>

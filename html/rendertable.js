@@ -22,6 +22,7 @@ function drawtable(){
 		    filenameele.setAttribute("id", "uploadfile");
 		    var filename = document.createTextNode('檔名' + results['sendoutlist']['filename']);
 		    filenameele.appendChild(filename);
+		    $('#ctcap').empty();
 		    document.getElementById('ctcap').appendChild(updatetimeele);
 		    document.getElementById('ctcap').appendChild(filenameele);
 		}
