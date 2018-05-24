@@ -1,117 +1,92 @@
 'use strict';
 
-chrome.storage.local.get("selects", function(results) {
-	if (chrome.runtime.lastError || undefined === results['selects']) {
-		console.log('no selects');
-	} else if (results['selects']['status'] === 'lock') {
-		document.getElementById("PropertySelection_0").value = results['selects']['setting']['PropertySelection_0'];
-		document.getElementById("itemCurrentStatusSelection").value = results['selects']['setting']['itemCurrentStatusSelection']
-	}
-});
-
-let seletcObserber;
-
-chrome.runtime.onMessage.addListener(
-	function(request, sender, sendResponse) {
-		console.log(sender.tab ?
-			"from a content script:" + sender.tab.url :
-			"from the extension");
-		var setselect = function(cursta, proper) {
-			return function(records) {
-				$('#itemCurrentStatusSelection')[0].value = cursta;
-				$('#PropertySelection_0')[0].value = proper;
-			}
-		};
-
-		var obtarget = document.getElementById('HiddenBrowse');
-		if (request.query == "selects") {
-			console.log("selects");
-			var arys = []
-			arys.push(document.getElementById("itemCurrentStatusSelection").outerHTML);
-			arys.push(document.getElementById("PropertySelection_0").outerHTML);
-			sendResponse({ selects: arys });
-		} else if (request.query == "lock") {
-			if (seletcObserber !== undefined)
-				seletcObserber.disconnect();
-			seletcObserber = new MutationObserver(
-				setselect(request.setting.itemCurrentStatusSelection, request.setting.PropertySelection_0)
-			)
-			document.getElementById("PropertySelection_0").value = request.setting.PropertySelection_0;
-			document.getElementById("itemCurrentStatusSelection").value = request.setting.itemCurrentStatusSelection;
-			seletcObserber.observe(obtarget, { 'childList': true });
-			console.log("lock");
-			console.log(request.setting);
-			sendResponse({ status: "OK" });
-		} else if (request.query == "release") {
-			if (seletcObserber !== undefined)
-				seletcObserber.disconnect();
-			console.log("release");
-			sendResponse({ status: "OK" });
-		}
-	});
-
-document.addEventListener("keydown", keydowne, true);
 var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
-function keydowne(event) {
-	var x = event.which || event.keyCode;
-	switch (x) {
-		case 67: //c
-			//TransitItemsToBeReceived
-			if ($('#closemeplease')[0] !== undefined) {
-				event.preventDefault();
-				$('#closemeplease')[0].click();
+(function(document) {
+	let seletcObserver;
+	var manage_in_batch = new RegExp(host + 'internaltranzit\/manage_in_batch*');
+	if (manage_in_batch.test(location.href)) {
+		chrome.storage.local.get("selects", function(results) {
+			if (chrome.runtime.lastError || undefined === results['selects']) {
+				console.log('no selects');
+			} else if (results['selects']['status'] === 'lock') {
+				console.log("lock");
+				document.getElementById("PropertySelection_0").value = results['selects']['setting']['PropertySelection_0'];
+				document.getElementById("itemCurrentStatusSelection").value = results['selects']['setting']['itemCurrentStatusSelection']
+			}else{
+				console.log('release');
 			}
-			//close print
-			else if ($('#closeHoldSlipPrint')[0] !== undefined) {
-				event.preventDefault();
-				$('#closeHoldSlipPrint')[0].click();
-			}
+		});
 
-			//attached fined
-			else if ($('#content-buttons a')[1] !== undefined) {
-				event.preventDefault();
-				$('#content-buttons a')[1].click();
+		chrome.runtime.onMessage.addListener(
+			function(request, sender, sendResponse) {
+				console.log(sender.tab ?
+					"from a content script:" + sender.tab.url :
+					"from the extension");
+				var setselect = function(cursta, proper) {
+					return function(records) {
+						$('#itemCurrentStatusSelection')[0].value = cursta;
+						$('#PropertySelection_0')[0].value = proper;
+					}
+				};
+
+				var obtarget = document.getElementById('HiddenBrowse');
+				if (request.query == "selects") {
+					console.log("selects");
+					var arys = []
+					arys.push(document.getElementById("itemCurrentStatusSelection").outerHTML);
+					arys.push(document.getElementById("PropertySelection_0").outerHTML);
+					sendResponse({ selects: arys });
+				} else if (request.query == "lock") {
+					if (seletcObserver !== undefined)
+						seletcObserver.disconnect();
+					seletcObserver = new MutationObserver(
+						setselect(request.setting.itemCurrentStatusSelection, request.setting.PropertySelection_0)
+					)
+					document.getElementById("PropertySelection_0").value = request.setting.PropertySelection_0;
+					document.getElementById("itemCurrentStatusSelection").value = request.setting.itemCurrentStatusSelection;
+					seletcObserver.observe(obtarget, { 'childList': true });
+					console.log("lock");
+					console.log(request.setting);
+					sendResponse({ status: "OK" });
+				} else if (request.query == "release") {
+					if (seletcObserver !== undefined)
+						seletcObserver.disconnect();
+					document.getElementById("PropertySelection_0").value = 0;
+					document.getElementById("itemCurrentStatusSelection").value = 0;
+					console.log("release");
+					sendResponse({ status: "OK" });
+				}
 			}
-			//preserved
-			else if ($('#HoldsListDialog_content a')[0] !== undefined) {
-				event.preventDefault();
-				$('#HoldsListDialog_content a')[0].click();
+		);
+	}
+}(document));
+
+chrome.storage.local.get("hotkeys", function(results) {
+	var namecodemap;
 			}
 			//origin
-			else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
-				event.preventDefault();
 				$('#TinreadMessageDialog_content a')[0].click();
 			}
 			break;
-		case 89: //y
-			//attached fined
 			if ($('#content-buttons a')[0] !== undefined) {
 				event.preventDefault();
 				$('#content-buttons a')[0].click();
-				document.getElementById("itemNumberField").value = '';
+				window.location = '/toread/circulation/pages/loan_desk';
 			}
 			break;
-		case 80: //p
-			if ($('#HoldSlipDialog_content a')[0] !== undefined) {
 				event.preventDefault();
 				$('#HoldSlipDialog_content a')[0].click();
-				document.getElementById("itemNumberField").value = '';
-			}
 			break;
 		case 88: //x
 			if ($('#closePopupTop')[0] !== undefined) {
 				$('#closePopupTop')[0].click();
 			}
 			break;
-		case 221: //]
-			if (document.getElementById("cardNumberField")) {
 				event.preventDefault();
 				document.getElementById("cardNumberField").focus();
 			}
 			break;
-		case 222: //'
-			event.preventDefault();
 			window.location = '/toread/circulation/pages/loan_desk';
 			break;
 		case 186: //;
@@ -122,9 +97,11 @@ function keydowne(event) {
 				window.location = '/toread/circulation/exttransit/transit_items_to_send';
 			}
 			event.preventDefault();
-			break;
+		}
 	}
 }
+});
+
 
 //add close button to 
 //TransitItemsToBeReceived popup windows
@@ -153,8 +130,8 @@ function keydowne(event) {
 	}
 	var exttransit_url = new RegExp(host + 'circulation\/exttransit\/required_from_ext_transit*');
 	if (exttransit_url.test(location.href) && document.getElementById('AssignedReports') !== null) {
-		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
-		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
+		var AssignedReportsObserver = new MutationObserver(AssignedReportsSetDefault);
+		AssignedReportsObserver.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
 }(document));
 
@@ -171,8 +148,8 @@ function keydowne(event) {
 	}
 	var exttransit_url = new RegExp(host + 'circulation\/pages\/search_transactions*');
 	if (exttransit_url.test(location.href) && document.getElementById('AssignedReports') !== null) {
-		var AssignedReportsObserber = new MutationObserver(AssignedReportsSetDefault);
-		AssignedReportsObserber.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
+		var AssignedReportsObserver = new MutationObserver(AssignedReportsSetDefault);
+		AssignedReportsObserver.observe(document.getElementById('AssignedReports'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
 }(document));
 
@@ -222,10 +199,10 @@ function keydowne(event) {
 		};
 
 		//listen to panel change
-		var PatronObserber = new MutationObserver(add_row_of_borrowcount);
-		var TransactionsObserber = new MutationObserver(modify_borrowcount);
-		PatronObserber.observe(document.getElementById('PatronItemDetails'), { 'childList': true, 'characterData': true });
-		TransactionsObserber.observe(document.getElementById('TransactionsContent'), { 'subtree': true, 'childList': true, 'characterData': true });
+		var PatronObserver = new MutationObserver(add_row_of_borrowcount);
+		var TransactionsObserver = new MutationObserver(modify_borrowcount);
+		PatronObserver.observe(document.getElementById('PatronItemDetails'), { 'childList': true, 'characterData': true });
+		TransactionsObserver.observe(document.getElementById('TransactionsContent'), { 'subtree': true, 'childList': true, 'characterData': true });
 	}
 }(document, location, $));
 
