@@ -82,9 +82,11 @@ chrome.storage.local.get("hotkeys", function(results) {
 	$(document).keypress(keydowne);
 
 	function keydowne(event) {
-		console.log(event.which);
-		console.log(event.keyCode);
 		var x = event.which;
+		if(x >= 65 && x <= 90){
+			x += 32;
+		}
+		console.log(x);
 		var closeaction = function() {
 			if ($('#closemeplease')[0] !== undefined) {
 				event.preventDefault();
@@ -155,11 +157,11 @@ chrome.storage.local.get("hotkeys", function(results) {
 		var keyconbinations = [
 			{ name: "取消", action: closeaction},
 			{ name: "是", action: yesaction},
+			{ name: "取消、關閉、否", action: closeaction},
 			{ name: "列印", action: printaction},
 			{ name: "聚焦證號欄", action: cardNumberFieldaction},
 			{ name: "借還書作業", action: loan_deskaction},
 			{ name: "移轉寄送", action: TransitItemsToBesendaction},
-			{ name: "關閉", action: managecloseaction }
 		]
 		var targetname = namecodemap.find(e => { return e.code === x });
 		console.log(targetname);

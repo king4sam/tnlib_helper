@@ -20,7 +20,7 @@ chrome.storage.local.get("hotkeys", function(results) {
 	namecodemap.forEach(e => {
 		$('#hotkeytable>tbody').append(`<tr>
 		            <th scope="row">${e.name}</th>
-		            <td><input disabled maxlength = "1" size = "1px" type="text"  id="${e.name}" /></td>
+		            <td><input style:"color:black;" disabled maxlength = "1" size = "1px" type="text"  id="${e.name}" /></td>
 		          </tr>`);
 		$(`#${e.name}`)[0].value = String.fromCharCode(e.code);
 	});
@@ -35,7 +35,7 @@ chrome.storage.local.get("hotkeys", function(results) {
 				alert("empty string");
 			} else {
 				var maps = tds.map(e => {
-					return { name: e.id, code: e.value.charCodeAt(0) };
+					return { name: e.id, code: e.value.toLowerCase.charCodeAt(0) };
 				})
 				chrome.storage.local.set({ "hotkeys": maps });
 			}
