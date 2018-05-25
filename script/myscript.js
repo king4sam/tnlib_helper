@@ -155,9 +155,8 @@ chrome.storage.local.get("hotkeys", function(results) {
 		}
 
 		var keyconbinations = [
-			{ name: "取消", action: closeaction},
-			{ name: "是", action: yesaction},
 			{ name: "取消、關閉、否", action: closeaction},
+			{ name: "是、確定", action: yesaction},
 			{ name: "列印", action: printaction},
 			{ name: "聚焦證號欄", action: cardNumberFieldaction},
 			{ name: "借還書作業", action: loan_deskaction},

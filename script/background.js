@@ -19,8 +19,8 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
  chrome.runtime.onInstalled.addListener(function(){
 	console.log("firsttime");
 	var namecodemap = [
-		{ name: "取消或關閉", code: 99 },
-		{ name: "是", code: 121 },
+		{ name: "取消、關閉、否", code: 99 },
+		{ name: "是、確定", code: 121 },
 		{ name: "列印", code: 112 },
 		{ name: "聚焦證號欄", code: 93 },
 		{ name: "借還書作業", code: 39 },
