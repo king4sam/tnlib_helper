@@ -62,116 +62,106 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 	}
 }(document));
 
-chrome.storage.local.get("hotkeys", function(results) {
-	var namecodemap;
-	if (chrome.runtime.lastError || undefined === results['hotkeys']) {
-		// namecodemap = [
-		// 	{ name: "取消或關閉", code: 99 },
-		// 	{ name: "是", code: 121 },
-		// 	{ name: "列印", code: 112 },
-		// 	{ name: "聚焦證號欄", code: 93 },
-		// 	{ name: "借還書作業", code: 39 },
-		// 	{ name: "移轉寄送", code: 59 },
-		// 	// { name: "關閉", code: 120 }
-		// ]
-		// chrome.storage.local.set({ "hotkeys": namecodemap });
-	} else {
-		namecodemap = results['hotkeys'];
-	}
-	// document.addEventListener("keydown", keydowne, true);
-	$(document).keypress(keydowne);
+(function(document) {
+	chrome.storage.local.get("hotkeys", function(results) {
+		var namecodemap;
+		if (chrome.runtime.lastError || undefined === results['hotkeys']) {} else {
+			namecodemap = results['hotkeys'];
+		}
+		$(document).keypress(keydowne);
 
-	function keydowne(event) {
-		var x = event.which;
-		if(x >= 65 && x <= 90){
-			x += 32;
-		}
-		console.log(x);
-		var closeaction = function() {
-			if ($('#closemeplease')[0] !== undefined) {
-				event.preventDefault();
-				$('#closemeplease')[0].click();
+		function keydowne(event) {
+			var x = event.which;
+			if (x >= 65 && x <= 90) {
+				x += 32;
 			}
-			//close print
-			else if ($('#closeHoldSlipPrint')[0] !== undefined) {
+			console.log(x);
+			var closeaction = function() {
+				if ($('#closemeplease')[0] !== undefined) {
+					event.preventDefault();
+					$('#closemeplease')[0].click();
+				}
+				//close print
+				else if ($('#closeHoldSlipPrint')[0] !== undefined) {
+					event.preventDefault();
+					$('#closeHoldSlipPrint')[0].click();
+				}
+
+				//attached fined
+				else if ($('#content-buttons a')[1] !== undefined) {
+					event.preventDefault();
+					$('#content-buttons a')[1].click();
+				}
+				//preserved
+				else if ($('#HoldsListDialog_content a')[0] !== undefined) {
+					event.preventDefault();
+					$('#HoldsListDialog_content a')[0].click();
+				}
+				//origin
+				else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
+					event.preventDefault();
+					$('#TinreadMessageDialog_content a')[0].click();
+				}
+			}
+			var yesaction = function() {
+				//attached fined
+				if ($('#content-buttons a')[0] !== undefined) {
+					event.preventDefault();
+					$('#content-buttons a')[0].click();
+					document.getElementById("itemNumberField").value = '';
+				}
+			}
+			var printaction = function() {
+				if ($('#HoldSlipDialog_content a')[0] !== undefined) {
+					event.preventDefault();
+					$('#HoldSlipDialog_content a')[0].click();
+					document.getElementById("itemNumberField").value = '';
+				}
+			}
+			var cardNumberFieldaction = function() {
+				if (document.getElementById("cardNumberField")) {
+					event.preventDefault();
+					document.getElementById("cardNumberField").focus();
+				}
+			}
+			var loan_deskaction = function() {
 				event.preventDefault();
-				$('#closeHoldSlipPrint')[0].click();
+				window.location = '/toread/circulation/pages/loan_desk';
+			}
+			var TransitItemsToBesendaction = function() {
+				var TransitItemsToBesend = new RegExp(host + 'circulation\/exttransit\/transit_items_to_send');
+				if (TransitItemsToBesend.test(location.href)) {
+					$('#TransferOperation > a')[1].click();
+				} else {
+					window.location = '/toread/circulation/exttransit/transit_items_to_send';
+				}
+				event.preventDefault();
+			}
+			var managecloseaction = function() {
+				if ($('#closePopupTop')[0] !== undefined) {
+					$('#closePopupTop')[0].click();
+				}
 			}
 
-			//attached fined
-			else if ($('#content-buttons a')[1] !== undefined) {
-				event.preventDefault();
-				$('#content-buttons a')[1].click();
-			}
-			//preserved
-			else if ($('#HoldsListDialog_content a')[0] !== undefined) {
-				event.preventDefault();
-				$('#HoldsListDialog_content a')[0].click();
-			}
-			//origin
-			else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
-				event.preventDefault();
-				$('#TinreadMessageDialog_content a')[0].click();
-			}
-		}
-		var yesaction = function() {
-			//attached fined
-			if ($('#content-buttons a')[0] !== undefined) {
-				event.preventDefault();
-				$('#content-buttons a')[0].click();
-				document.getElementById("itemNumberField").value = '';
+			var keyconbinations = [
+				{ name: "取消、關閉、否", action: closeaction },
+				{ name: "是、確定", action: yesaction },
+				{ name: "列印", action: printaction },
+				{ name: "聚焦證號欄", action: cardNumberFieldaction },
+				{ name: "借還書作業", action: loan_deskaction },
+				{ name: "移轉寄送", action: TransitItemsToBesendaction },
+			]
+			var targetname = namecodemap.find(e => { return e.code === x });
+			console.log(targetname);
+			if (targetname) {
+				var targetaction = keyconbinations.find(e => { return e.name === targetname.name });
+				if (targetaction) {
+					targetaction.action();
+				}
 			}
 		}
-		var printaction = function() {
-			if ($('#HoldSlipDialog_content a')[0] !== undefined) {
-				event.preventDefault();
-				$('#HoldSlipDialog_content a')[0].click();
-				document.getElementById("itemNumberField").value = '';
-			}
-		}
-		var cardNumberFieldaction = function() {
-			if (document.getElementById("cardNumberField")) {
-				event.preventDefault();
-				document.getElementById("cardNumberField").focus();
-			}
-		}
-		var loan_deskaction = function() {
-			event.preventDefault();
-			window.location = '/toread/circulation/pages/loan_desk';
-		}
-		var TransitItemsToBesendaction = function() {
-			var TransitItemsToBesend = new RegExp(host + 'circulation\/exttransit\/transit_items_to_send');
-			if (TransitItemsToBesend.test(location.href)) {
-				$('#TransferOperation > a')[1].click();
-			} else {
-				window.location = '/toread/circulation/exttransit/transit_items_to_send';
-			}
-			event.preventDefault();
-		}
-		var managecloseaction = function() {
-			if ($('#closePopupTop')[0] !== undefined) {
-				$('#closePopupTop')[0].click();
-			}
-		}
-
-		var keyconbinations = [
-			{ name: "取消、關閉、否", action: closeaction},
-			{ name: "是、確定", action: yesaction},
-			{ name: "列印", action: printaction},
-			{ name: "聚焦證號欄", action: cardNumberFieldaction},
-			{ name: "借還書作業", action: loan_deskaction},
-			{ name: "移轉寄送", action: TransitItemsToBesendaction},
-		]
-		var targetname = namecodemap.find(e => { return e.code === x });
-		console.log(targetname);
-		if (targetname) {
-			var targetaction = keyconbinations.find(e => { return e.name === targetname.name });
-			if (targetaction) {
-				targetaction.action();
-			}
-		}
-	}
-});
+	});
+}(document));
 
 //add close button to 
 //TransitItemsToBeReceived popup windows
