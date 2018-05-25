@@ -13,7 +13,7 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 				console.log("lock");
 				document.getElementById("PropertySelection_0").value = results['selects']['setting']['PropertySelection_0'];
 				document.getElementById("itemCurrentStatusSelection").value = results['selects']['setting']['itemCurrentStatusSelection']
-			}else{
+			} else {
 				console.log('release');
 			}
 		});
@@ -64,32 +64,80 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
 chrome.storage.local.get("hotkeys", function(results) {
 	var namecodemap;
+	if (chrome.runtime.lastError || undefined === results['hotkeys']) {
+		// namecodemap = [
+		// 	{ name: "取消或關閉", code: 99 },
+		// 	{ name: "是", code: 121 },
+		// 	{ name: "列印", code: 112 },
+		// 	{ name: "聚焦證號欄", code: 93 },
+		// 	{ name: "借還書作業", code: 39 },
+		// 	{ name: "移轉寄送", code: 59 },
+		// 	// { name: "關閉", code: 120 }
+		// ]
+		// chrome.storage.local.set({ "hotkeys": namecodemap });
+	} else {
+		namecodemap = results['hotkeys'];
+	}
+	// document.addEventListener("keydown", keydowne, true);
+	$(document).keypress(keydowne);
+
+	function keydowne(event) {
+		console.log(event.which);
+		console.log(event.keyCode);
+		var x = event.which;
+		var closeaction = function() {
+			if ($('#closemeplease')[0] !== undefined) {
+				event.preventDefault();
+				$('#closemeplease')[0].click();
+			}
+			//close print
+			else if ($('#closeHoldSlipPrint')[0] !== undefined) {
+				event.preventDefault();
+				$('#closeHoldSlipPrint')[0].click();
+			}
+
+			//attached fined
+			else if ($('#content-buttons a')[1] !== undefined) {
+				event.preventDefault();
+				$('#content-buttons a')[1].click();
+			}
+			//preserved
+			else if ($('#HoldsListDialog_content a')[0] !== undefined) {
+				event.preventDefault();
+				$('#HoldsListDialog_content a')[0].click();
 			}
 			//origin
+			else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
+				event.preventDefault();
 				$('#TinreadMessageDialog_content a')[0].click();
 			}
-			break;
+		}
+		var yesaction = function() {
+			//attached fined
 			if ($('#content-buttons a')[0] !== undefined) {
 				event.preventDefault();
 				$('#content-buttons a')[0].click();
-				window.location = '/toread/circulation/pages/loan_desk';
+				document.getElementById("itemNumberField").value = '';
 			}
-			break;
+		}
+		var printaction = function() {
+			if ($('#HoldSlipDialog_content a')[0] !== undefined) {
 				event.preventDefault();
 				$('#HoldSlipDialog_content a')[0].click();
-			break;
-		case 88: //x
-			if ($('#closePopupTop')[0] !== undefined) {
-				$('#closePopupTop')[0].click();
+				document.getElementById("itemNumberField").value = '';
 			}
-			break;
+		}
+		var cardNumberFieldaction = function() {
+			if (document.getElementById("cardNumberField")) {
 				event.preventDefault();
 				document.getElementById("cardNumberField").focus();
 			}
-			break;
+		}
+		var loan_deskaction = function() {
+			event.preventDefault();
 			window.location = '/toread/circulation/pages/loan_desk';
-			break;
-		case 186: //;
+		}
+		var TransitItemsToBesendaction = function() {
 			var TransitItemsToBesend = new RegExp(host + 'circulation\/exttransit\/transit_items_to_send');
 			if (TransitItemsToBesend.test(location.href)) {
 				$('#TransferOperation > a')[1].click();
@@ -98,10 +146,31 @@ chrome.storage.local.get("hotkeys", function(results) {
 			}
 			event.preventDefault();
 		}
-	}
-}
-});
+		var managecloseaction = function() {
+			if ($('#closePopupTop')[0] !== undefined) {
+				$('#closePopupTop')[0].click();
+			}
+		}
 
+		var keyconbinations = [
+			{ name: "取消", action: closeaction},
+			{ name: "是", action: yesaction},
+			{ name: "列印", action: printaction},
+			{ name: "聚焦證號欄", action: cardNumberFieldaction},
+			{ name: "借還書作業", action: loan_deskaction},
+			{ name: "移轉寄送", action: TransitItemsToBesendaction},
+			{ name: "關閉", action: managecloseaction }
+		]
+		var targetname = namecodemap.find(e => { return e.code === x });
+		console.log(targetname);
+		if (targetname) {
+			var targetaction = keyconbinations.find(e => { return e.name === targetname.name });
+			if (targetaction) {
+				targetaction.action();
+			}
+		}
+	}
+});
 
 //add close button to 
 //TransitItemsToBeReceived popup windows
