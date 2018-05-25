@@ -15,3 +15,17 @@ chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
 		actions: [new chrome.declarativeContent.ShowPageAction()]
 	}]);
 });
+
+ chrome.runtime.onInstalled.addListener(function(){
+	console.log("firsttime");
+	var namecodemap = [
+		{ name: "取消或關閉", code: 99 },
+		{ name: "是", code: 121 },
+		{ name: "列印", code: 112 },
+		{ name: "聚焦證號欄", code: 93 },
+		{ name: "借還書作業", code: 39 },
+		{ name: "移轉寄送", code: 59 },
+		// { name: "關閉", code: 120 }
+	]
+	chrome.storage.local.set({ "hotkeys": namecodemap });
+})
