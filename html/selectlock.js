@@ -46,29 +46,31 @@ chrome.storage.local.get("selects", function(results) {
 
 		chrome.tabs.sendMessage(tabs[0].id, { query: "selects" }, function(response) {
 			console.log(response);
-			response.selects.forEach(e => {
-				html = $.parseHTML(e);
-				switch (html[0].id) {
-					case "PropertySelection_0":
-						$('#selects').append("<div display = 'block'>" + '<label for="PropertySelection_0">在opac顯示</label>' + html[0].outerHTML + "</div>");
-						break;
+			if(undefined !== response){
+				response.selects.forEach(e => {
+					html = $.parseHTML(e);
+					switch (html[0].id) {
+						case "PropertySelection_0":
+							$('#selects').append("<div display = 'block'>" + '<label for="PropertySelection_0">在opac顯示</label>' + html[0].outerHTML + "</div>");
+							break;
 
-					case "itemCurrentStatusSelection":
-						$('#selects').append("<div display = 'block'>" + '<label for="itemCurrentStatusSelection">館藏狀態</label>' + html[0].outerHTML + "</div>");
-						break;
+						case "itemCurrentStatusSelection":
+							$('#selects').append("<div display = 'block'>" + '<label for="itemCurrentStatusSelection">館藏狀態</label>' + html[0].outerHTML + "</div>");
+							break;
+					}
+				})
+				var opacele = document.getElementById("PropertySelection_0");
+				var statusele = document.getElementById("itemCurrentStatusSelection")
+				if (chrome.runtime.lastError || undefined === results['selects']) {
+					console.log('no selects');
+				} else if (results['selects']['status'] === 'lock') {
+					opacele.value = results['selects']['setting']['PropertySelection_0'];
+					statusele.value = results['selects']['setting']['itemCurrentStatusSelection']
 				}
-			})
-			var opacele = document.getElementById("PropertySelection_0");
-			var statusele = document.getElementById("itemCurrentStatusSelection")
-			if (chrome.runtime.lastError || undefined === results['selects']) {
-				console.log('no selects');
-			} else if (results['selects']['status'] === 'lock') {
-				opacele.value = results['selects']['setting']['PropertySelection_0'];
-				statusele.value = results['selects']['setting']['itemCurrentStatusSelection']
-			}
-			document.getElementById('selectlocker').onchange = switchonchange(opacele, statusele);
-			if (results['selects']['status'] === 'lock') {
-				$('#selectlocker').bootstrapToggle('on');
+				document.getElementById('selectlocker').onchange = switchonchange(opacele, statusele);
+				if (results['selects']['status'] === 'lock') {
+					$('#selectlocker').bootstrapToggle('on');
+				}
 			}
 		});
 	});
