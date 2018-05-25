@@ -34,7 +34,8 @@
       <button type="button" id='closebtn' class="close" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <table class="table table-striped">
+      <input type="checkbox" data-onstyle="success" data-offstyle="danger" data-width="100" id="hotkeysetter" checked data-toggle="toggle" data-on = "重新定義" data-off = "設定中">
+      <table class="table table-striped" id='hotkeytable'>
         <thead>
           <tr>
             <th scope="col">按鈕</th>
@@ -42,7 +43,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <!-- <tr>
             <th scope="row">是</th>
             <td>Y</td>
           </tr>
@@ -81,9 +82,10 @@
           <tr>
             <th scope="row">移轉寄送</th>
             <td>;</td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
+      <script type="text/javascript" src='hotkeytable.js'></script>
     </div>
     <div class="tab-pane fade" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
       <button type="button" id='closebtn1' class="close" aria-label="Close">
