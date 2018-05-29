@@ -20,6 +20,7 @@ chrome.storage.local.get("hotkeys", function(results) {
     document.getElementById('hotkeysetter').onchange = function() {
         if (this.checked === true) {
             console.log('switch on');
+            $('#reset').css("display","none");
             $('#hotkeytable > tbody > tr > td > input').prop("disabled", true);
             var tds = $('#hotkeytable > tbody > tr > td > input').toArray();
             var zerostr = tds.filter(e => { return e.value.length !== 1 }).length;
@@ -45,6 +46,7 @@ chrome.storage.local.get("hotkeys", function(results) {
             }
         } else {
             console.log('switch off');
+            $('#reset').css("display","inline");
             $('#hotkeytable > tbody > tr > td > input').prop("disabled", false);
         }
     };
@@ -71,6 +73,23 @@ chrome.storage.local.get("hotkeys", function(results) {
         })
     });
 });
+
+document.getElementById('reset').onclick = function() {
+	var namecodemap = [
+	{ name: "取消、關閉、否", code: 99 },
+	{ name: "是、確定", code: 121 },
+	{ name: "列印", code: 112 },
+	{ name: "聚焦證號欄", code: 93 },
+	{ name: "借還書作業", code: 39 },
+	{ name: "移轉寄送", code: 59 },
+	];
+	var selects = { status: "release" };
+	chrome.storage.local.set({ "hotkeys": namecodemap });
+	chrome.storage.local.set({ "selects": selects });
+    namecodemap.forEach(e => {
+        $(`#${e.name}`)[0].value = String.fromCharCode(e.code);
+    });
+}
 
 var findduptds = function(ary) {
     var appeared = [];
