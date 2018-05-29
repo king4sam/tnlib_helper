@@ -1,6 +1,6 @@
 'use strict';
 
-var host = 'http:\/\/163\.26\.71\.106\/toread\/';
+var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
 (function(document) {
 	var manage_in_batch = new RegExp(host + 'internaltranzit\/manage_in_batch*');
