@@ -3,8 +3,18 @@
 var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 
 (function(document) {
+	function InputClear() {
+		console.log("InputClear");
+		try {
+			document.getElementById("listField").value = "";
+		} catch (e) {
+			console.log('no listField');
+		}
+	}
 	var manage_in_batch = new RegExp(host + 'internaltranzit\/manage_in_batch*');
 	if (manage_in_batch.test(location.href)) {
+		var AssignedReportsObserver = new MutationObserver(InputClear);
+		AssignedReportsObserver.observe(document.getElementById('results'), { 'subtree': true, 'childList': true });
 		chrome.storage.local.get("selects", function(results) {
 			if (chrome.runtime.lastError || undefined === results['selects']) {
 				console.log('no selects');
@@ -22,8 +32,7 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 (function(document) {
 	chrome.storage.local.get("hotkeys", function(results) {
 		var namecodemap;
-		if (chrome.runtime.lastError || undefined === results['hotkeys']) {
-		} else {
+		if (chrome.runtime.lastError || undefined === results['hotkeys']) {} else {
 			namecodemap = results['hotkeys'];
 		}
 		$(document).keypress(keydowne);
@@ -61,8 +70,7 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 				else if ($('#TinreadMessageDialog_content a')[0] !== undefined) {
 					event.preventDefault();
 					$('#TinreadMessageDialog_content a')[0].click();
-				}
-				else if($('#exceptionDialogHandle')[0] !== undefined){
+				} else if ($('#exceptionDialogHandle')[0] !== undefined) {
 					event.preventDefault();
 					$('#exceptionDialogHandle')[0].click();
 				}
@@ -108,12 +116,12 @@ var host = 'http:\/\/163\.26\.71\.107\/toread\/';
 			}
 
 			var keyconbinations = [
-				{ name: "取消、關閉、否", action: closeaction},
-				{ name: "是、確定", action: yesaction},
-				{ name: "列印", action: printaction},
-				{ name: "聚焦證號欄", action: cardNumberFieldaction},
-				{ name: "借還書作業", action: loan_deskaction},
-				{ name: "移轉寄送", action: TransitItemsToBesendaction},
+				{ name: "取消、關閉、否", action: closeaction },
+				{ name: "是、確定", action: yesaction },
+				{ name: "列印", action: printaction },
+				{ name: "聚焦證號欄", action: cardNumberFieldaction },
+				{ name: "借還書作業", action: loan_deskaction },
+				{ name: "移轉寄送", action: TransitItemsToBesendaction },
 				{ name: "關閉", action: managecloseaction }
 			]
 			var targetname = namecodemap.find(e => { return e.code === x });
@@ -171,14 +179,14 @@ chrome.runtime.onMessage.addListener(
 				document.getElementById("itemCurrentStatusSelection").value = 0;
 				console.log("release");
 				sendResponse({ status: "OK" });
-			} 
+			}
 		}
 
-		if(request.query ==  "reload"){
+		if (request.query == "reload") {
 			console.log("reload");
 			location.reload();
 		}
-	}	
+	}
 );
 
 //add close button to 
