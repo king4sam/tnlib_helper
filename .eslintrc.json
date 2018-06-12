@@ -1,0 +1,16 @@
+{
+    "extends": "airbnb-base",
+    "env": {
+      "browser": true,
+      "webextensions": true,
+      "es6": true,
+      "jquery": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "rules":{
+      "func-names": 0,
+      "no-console": 0
+    }
+}

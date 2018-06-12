@@ -8,6 +8,7 @@
     "babel-loader": "^7.1.4",
     "copy-webpack-plugin": "^4.5.1",
     "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
     "eslint-config-google": "^0.9.1",
     "eslint-config-jquery": "^1.0.1",
     "eslint-config-standard": "^11.0.0",
@@ -31,7 +32,7 @@
   },
   "scripts": {
     "test": "karma start karma.conf.js",
-    "lint": "eslint script/*.js --fix"
+    "lint": "eslint script/*.js"
   },
   "repository": {
     "type": "git",
@@ -41,13 +42,6 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/king4sam/tnlib_helper/issues"
-  },
-  "eslintConfig": {
-    "env": {
-      "browser": true,
-      "node": true,
-      "jquery": true
-    }
   },
   "homepage": "https://github.com/king4sam/tnlib_helper#readme"
 }
