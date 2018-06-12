@@ -1,3 +1,5 @@
+import SearchHelper from '../script/search_helper.js'
+
 document.getElementById('fileConfirm-btn1').addEventListener('click', fileviewerload1);
 
 function allProgress(proms, progresscb) {
@@ -39,7 +41,8 @@ function fileviewerload1(event) {
 });
       allProgress(
         results.map(function(e) {
-          return getbookpage(e);
+          let sh = new SearchHelper("http://163.26.71.106/");
+          return sh.getbookpage(e);
         }), (p) => {
           // console.log(p);
           $('#spb')[0].style.width = p.toFixed(2) + '%';

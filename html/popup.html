@@ -7,8 +7,8 @@
   <script type="text/javascript" src="../script/lib/popper.min.js"></script>
   <script type="text/javascript" src="../script/lib/bootstrap.js"></script>
   <script type="text/javascript" src="../script/lib/papaparse.js"></script>
-  <script type="text/javascript" src="../script/search_helper.js"></script>
   <script type="text/javascript" src="../script/lib/bootstrap-toggle.min.js"></script>
+
   <link rel="stylesheet" type="text/css" href="css/extension.css">
   <link rel="stylesheet" type="text/css" href="../script/lib/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../script/lib/bootstrap-toggle.min.css">
@@ -55,7 +55,7 @@
       <input type="file" id="fileForUpload1">
       <div id='fileContents1'></div>
       <button id="fileConfirm-btn1">確認上傳</button>
-      <script type="text/javascript" src='findcomments.js'></script>
+      <script type="module" src = "./findcomments.js"></script>
     </div>
     <div class="tab-pane fade" id="booktable" role="tabpanel" aria-labelledby="booktable-tab">
       <button type="button" id='closebtn2' class="close" aria-label="Close">
@@ -76,7 +76,7 @@
       <script type="text/javascript" src='rendertable.js'></script>
     </div>
     <div class="tab-pane fade" id="select" role="tabpanel" aria-labelledby="select-tab">
-      <div id = "selectscontainer" display = "block" >	
+      <div id = "selectscontainer" display = "block" >
       		<input type="checkbox" data-onstyle="success" data-offstyle="danger" data-width="100" id="selectlocker" checked data-toggle="toggle" data-on = "鎖定" data-off = "未鎖定">
           <div id="selects"></div>
       </div>
