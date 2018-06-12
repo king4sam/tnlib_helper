@@ -6,13 +6,14 @@ module.exports = function webpackConfig() {
   const config = {
     resolve: {
       alias: {
-        script: path.join(__dirname, "script")
+        script: path.join(__dirname, "script"),
+        html:path.join(__dirname, "html")
       },
-      modules: ["./script", "./node_modules"]
+      modules: ["./script", "./node_modules", "./html"]
     },
     entry: {
-      background: "./script/background.js",
-      sum:"./script/sum.js"
+      background: "./script/background.js"
+      // sum:"./script/sum.js"
     },
     optimization: {
       splitChunks: {
@@ -43,25 +44,25 @@ module.exports = function webpackConfig() {
           }
         }
       ]
-    },
-    plugins: [
-      new webpack.optimize.ModuleConcatenationPlugin(),
-      new CopyWebpackPlugin([
-        {
-          from: "script"
-        },
-        {
-          context: "srcipt/modes",
-          from: "**/default.json",
-          to: "default_[folder].json"
-        },
-        {
-          context: "srcipt/modes",
-          from: "**/config.json",
-          to: "config_[folder].json"
-        }
-      ])
-    ]
+    }
+    // plugins: [
+    //   new webpack.optimize.ModuleConcatenationPlugin(),
+    //   new CopyWebpackPlugin([
+    //     {
+    //       from: "script"
+    //     },
+    //     {
+    //       context: "srcipt/modes",
+    //       from: "**/default.json",
+    //       to: "default_[folder].json"
+    //     },
+    //     {
+    //       context: "srcipt/modes",
+    //       from: "**/config.json",
+    //       to: "config_[folder].json"
+    //     }
+    //   ])
+    // ]
   };
 
   return config;

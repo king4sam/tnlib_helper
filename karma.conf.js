@@ -44,11 +44,14 @@ module.exports = function karmaConfig(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ["ChromeHeadless"],
+    browserNoActivityTimeout: 60000,
+    // browsers: ["ChromeHeadless"],
+    browsers: ['Chrome_without_security'],
     customLaunchers: {
-      Chrome_travis_ci: {
-        base: "Chrome",
-        flags: ["--no-sandbox"]
+      Chrome_without_security: {
+        base: 'Chrome',
+        flags: ['--disable-web-security'],
+        displayName: 'Chrome w/o security'
       }
     },
     concurrency: Infinity
