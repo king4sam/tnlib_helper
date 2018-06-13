@@ -33,7 +33,7 @@ export default class SearchHelper {
     });
   }
 
-  static getbooktrs(htmlDoc, book) {
+  getbooktrs(htmlDoc, book) {
     if (htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr').length === 0) {
       return null;
     }
@@ -41,7 +41,7 @@ export default class SearchHelper {
       .filter(e => e.children[0].innerText.trim() === book[0]);
   }
 
-  static iserrpage(htmlDoc) {
+  iserrpage(htmlDoc) {
     const err = htmlDoc.querySelectorAll('img[alt="error_refresh"]');
     if (err.length > 0) {
       console.log('pageerr');
@@ -50,7 +50,7 @@ export default class SearchHelper {
     return false;
   }
 
-  static tnlibxmlgetinit(url, book) {
+  tnlibxmlgetinit(url, book) {
     const req = new XMLHttpRequest();
     req.open('GET', url);
     req.setRequestHeader('Accept', 'text/html');
