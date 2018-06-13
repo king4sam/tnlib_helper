@@ -12,16 +12,21 @@ chrome.storage.local.get('reservedbooks', (items) => {
       const anding = /^ED\d{7}/g;
       const barcodes = [];
       const targettrs = $('table[class=\'tab1\'] tr').toArray().slice(1, -1);
-      //
-      while ((matches = regex.exec(this.responseText)) !== null) {
-        // This is necessary to avoid infinite loops with zero-width matches
-        if (matches.index === regex.lastIndex) {
-          regex.lastIndex += 1;
+      const parser = new DOMParser();
+      const htmlDoc = parser.parseFromString(req.target.response, "text/html");
+      const submitbook = htmlDoc.querySelectorAll('#___01 > tbody > tr:nth-child(3) > td > div > div:nth-child(2) > form > table > tbody > tr:nth-child(5) > td:nth-child(2) > div');
+      submitbook.forEach((e) => {
+        if( !e.children[0].checked ){
+          while ((matches = regex.exec(e.innerText)) !== null) {
+            // This is necessary to avoid infinite loops with zero-width matches
+            if (matches.index === regex.lastIndex) {
+              regex.lastIndex += 1;
+            }
+            //if the books was arrived, hightlight the row in table
+            barcodes.push(matches[BarcodeGroupNumber])
+          }
         }
-
-        // if the books was arrived, hightlight the row in table
-        barcodes.push(matches[BarcodeGroupNumber]);
-      }
+      })
       const bookrequests = barcodes.map(barcode => getbookpage([barcode]));
       Promise.all(bookrequests)
         .then((ress) => {
