@@ -1,34 +1,40 @@
-const host = 'http://163.26.71.107/toread/';
+const host = 'http://163.26.71.106/toread/';
 
-(function (document) {
-  const InputClear = function () {
-    console.log('InputClear');
-    try {
-      const listfiled = document.getElementById('listField');
-      listfiled.value = '';
-    } catch (e) {
-      console.log('no listField');
-    }
-  };
-  const manageinbatch = new RegExp(`${host}internaltranzit/manage_in_batch*`);
-  if (manageinbatch.test(window.location.href)) {
-    const AssignedReportsObserver = new MutationObserver(InputClear);
-    AssignedReportsObserver.observe(document.getElementById('results'), { subtree: true, childList: true });
-    chrome.storage.local.get('selects', (results) => {
-      if (chrome.runtime.lastError || undefined === results.selects) {
-        console.log('no selects');
-      } else if (results.selects.status === 'lock') {
-        console.log('lock');
-        const ps0 = document.getElementById('PropertySelection_0');
-        ps0.value = results.selects.setting.PropertySelection_0;
-        const icss = document.getElementById('itemCurrentStatusSelection');
-        icss.value = results.selects.setting.itemCurrentStatusSelection;
-      } else {
-        console.log('release');
-      }
-    });
-  }
-}(document));
+const script = document.createElement('script');
+script.setAttribute("type", "module");
+script.setAttribute("src", chrome.extension.getURL('./script/main.js'));
+const head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
+head.insertBefore(script, head.lastChild);
+
+// (function (document) {
+//   const InputClear = function () {
+//     console.log('InputClear');
+//     try {
+//       const listfiled = document.getElementById('listField');
+//       listfiled.value = '';
+//     } catch (e) {
+//       console.log('no listField');
+//     }
+//   };
+//   const manageinbatch = new RegExp(`${host}internaltranzit/manage_in_batch*`);
+//   if (manageinbatch.test(window.location.href)) {
+//     const AssignedReportsObserver = new MutationObserver(InputClear);
+//     AssignedReportsObserver.observe(document.getElementById('results'), { subtree: true, childList: true });
+//     chrome.storage.local.get('selects', (results) => {
+//       if (chrome.runtime.lastError || undefined === results.selects) {
+//         console.log('no selects');
+//       } else if (results.selects.status === 'lock') {
+//         console.log('lock');
+//         const ps0 = document.getElementById('PropertySelection_0');
+//         ps0.value = results.selects.setting.PropertySelection_0;
+//         const icss = document.getElementById('itemCurrentStatusSelection');
+//         icss.value = results.selects.setting.itemCurrentStatusSelection;
+//       } else {
+//         console.log('release');
+//       }
+//     });
+//   }
+// }(document));
 
 (function (document) {
   chrome.storage.local.get('hotkeys', (results) => {
@@ -187,135 +193,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// add close button to
-// TransitItemsToBeReceived popup windows
-(function (document) {
-  const TransitItemsToBeReceived = new RegExp(`${host}circulation/exttransit/TransitItemsToBeReceived,popupComponent.*`);
-  if (TransitItemsToBeReceived.test(window.location.href)) {
-    const closebtn = document.createElement('a');
-    closebtn.id = 'closemeplease';
-    closebtn.classList.add('dialog');
-    closebtn.appendChild(document.createTextNode('close'));
-    closebtn.onclick = function () {
-      window.close();
-    };
-    $('table tr td').append(closebtn);
-  }
-}(document));
-
-// AssignedReports
-// select default value setup
-(function (document) {
-  function AssignedReportsSetDefault() {
-    try {
-      const ps6 = document.getElementById('PropertySelection_6');
-      ps6.selectedIndex = '1';
-      const ps7 = document.getElementById('PropertySelection_7');
-      ps7.selectedIndex = '2';
-    } catch (e) {
-      console.log('no AssignedReports');
-    }
-  }
-  const exttransiturl = new RegExp(`${host}circulation/exttransit/required_from_ext_transit*`);
-  if (exttransiturl.test(window.location.href) && document.getElementById('AssignedReports') !== null) {
-    const AssignedReportsObserver = new MutationObserver(AssignedReportsSetDefault);
-    AssignedReportsObserver.observe(document.getElementById('AssignedReports'), { subtree: true, childList: true, characterData: true });
-  }
-}(document));
-
-// search_transactionsReports
-// select default value setup
-(function (document) {
-  function AssignedReportsSetDefault() {
-    try {
-      const ps7 = document.getElementById('PropertySelection_7');
-      ps7.selectedIndex = '1';
-      const ps8 = document.getElementById('PropertySelection_8');
-      ps8.selectedIndex = '2';
-    } catch (e) {
-      console.log('no AssignedReports');
-    }
-  }
-  const exttransiturl = new RegExp(`${host}circulation/pages/search_transactions*`);
-  if (exttransiturl.test(window.location.href) && document.getElementById('AssignedReports') !== null) {
-    const AssignedReportsObserver = new MutationObserver(AssignedReportsSetDefault);
-    AssignedReportsObserver.observe(document.getElementById('AssignedReports'), { subtree: true, childList: true, characterData: true });
-  }
-}(document));
-
-// add today borrow count field
-// in PatronDetails
-(function (document, window, $) {
-  const loandeskurl = new RegExp(`${host}circulation/pages/loan_desk*`);
-  if (loandeskurl.test(window.location.href)) {
-    const borrowcount = function () {
-      // fetch records of book
-      const books = $('#If_43 tr').toArray();
-      books.shift();
-
-      const now = new Date();
-
-      function sameday(a, b) {
-        return a.getDate() === b.getDate()
-            && a.getMonth() === b.getMonth()
-            && a.getFullYear() === b.getFullYear();
-      }
-
-      function Sum(total, num) {
-        return total + num;
-      }
-
-      function istoday(e) {
-        const t = new Date(e.children[9].innerText);
-        return sameday(t, now) === true ? 1 : 0;
-      }
-
-      return books.map(istoday).reduce(Sum, 0);
-    };
-
-    const addborrowcount = function () {
-      const borrowcountposition = '#viewPatronDetailsComponent> tbody> tr> td >table >tbody> tr> td >table >tbody:last-child';
-      const reader = $(borrowcountposition);
-      if (reader.length !== 0) {
-        reader.append(`<tr id = "todayborrowcount"><td><b>今日借書:</b>
-          <font color="#2952A3" style="font-weight: bold;">
-          ${borrowcount()}
-          </font></td></tr>`);
-      }
-    };
-
-    const modifyborrowcount = function () {
-      const tbc = $('#todayborrowcount font');
-      tbc.innerText = borrowcount();
-    };
-
-    // listen to panel change
-    const PatronObserver = new MutationObserver(addborrowcount);
-    const TransactionsObserver = new MutationObserver(modifyborrowcount);
-    PatronObserver.observe(document.getElementById('PatronItemDetails'), { childList: true, characterData: true });
-    TransactionsObserver.observe(document.getElementById('TransactionsContent'), { subtree: true, childList: true, characterData: true });
-  }
-}(document, window, $));
-
-// print view modify
-(function (document, $) {
-  console.log('hi');
-  const modifyprintview = function () {
-    console.log('yo');
-    if ($('#HoldSlipPrintContent').length !== 0) {
-      console.log($('#HoldSlipPrintContent'));
-      $('#HoldSlipPrintContent > p:nth-child(2) > span').css('font-size', 'large');
-      $('#HoldSlipPrintContent strong').css('font-size', 'small');
-      const hspc = $('#HoldSlipPrintContent')[0];
-      hspc.innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<br.*>(\s*<br>)*/g, '<br>');
-      hspc.innerHTML = $('#HoldSlipPrintContent')[0].innerHTML.replace(/<p>&nbsp;<\/p>/g, '');
-      $('#HoldSlipPrintContent > p:nth-child(2)').css('line-height', '1.9em');
-      $('#HoldSlipPrintContent > p:nth-child(2) > span:nth-child(2)').remove();
-    }
-  };
-  const PrintContentObserver = new MutationObserver(modifyprintview);
-  const obtarget = document.getElementById('TransactionsContent') || document.getElementById('TransactionsDesk');
-  if (obtarget !== null) {
-    PrintContentObserver.observe(obtarget, { childList: true });
-  }
-}(document, $));

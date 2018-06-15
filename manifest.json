@@ -35,7 +35,17 @@
     "128": "images/get_started128.png"
   },
   "web_accessible_resources": [
-    "script/lib/*"
+    "script/lib/*",
+    "script/LibHost.js",
+    "script/ManageInBatchOptionsSetter.js",
+    "script/PopupPrintCloseAdder.js",
+    "script/ReportsOptionSetter.js",
+    "script/TodayCountAppender.js",
+    "script/PrintViewModifier.js",
+    "script/main.js"
   ],
+  "externally_connectable": {
+    "matches": ["http://163.26.71.106/*"]
+  },
   "manifest_version": 2
 }
