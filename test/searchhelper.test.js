@@ -2,7 +2,7 @@ import search_helper from 'script/search_helper.js';
 
 describe("search_helper.js" , () => {
   describe("getbook", () => {
-    let sh = new search_helper("http://163.26.71.106/");
+    let sh = new search_helper("http://localhost:3000/");
     it ("should return the page of queried book", (done)=>{
       sh.getbookpage(["ED0105559"]).then((rs)=>{
         // console.log(rs);
@@ -18,7 +18,7 @@ describe("search_helper.js" , () => {
 
   describe("booknotfound", () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
-    let sh = new search_helper("http://163.26.71.106/");
+    let sh = new search_helper("http://localhost:3000/");
     it ("should return errpage", (done)=>{
       sh.getbookpage(["ED12"]).then((rs)=>{
         // console.log(rs);

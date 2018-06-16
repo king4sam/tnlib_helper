@@ -50,3 +50,29 @@ chrome.runtime.onStartup.addListener(() => {
     }
   });
 });
+
+chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => {
+  if (request.request === 'selects') {
+    console.log('select');
+    console.log(request);
+    console.log(sender);
+    const ps = new Promise((resolve, reject) => {
+      chrome.storage.local.get('selects', (results) => {
+        console.log(results);
+        if (chrome.runtime.lastError) {
+          reject(Error('err'));
+        } else if (undefined === results.selects) {
+          console.log('undefined');
+          resolve({ status: 'release' });
+        } else {
+          console.log('is');
+          resolve(results);
+        }
+      });
+    });
+    ps.then((sm) => {
+      sendResponse(sm);
+    });
+  }
+  return true;
+});

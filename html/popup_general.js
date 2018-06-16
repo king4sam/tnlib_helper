@@ -1,3 +1,3 @@
-$('button[class="close"]').click( ()=>{
-window.close();
-} );
+$('button[class="close"]').click(() => {
+    window.close();
+});
