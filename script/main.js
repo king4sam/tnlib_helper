@@ -1,17 +1,18 @@
-'use strict';
+
 
 import ReportsOptionSetter from './ReportsOptionSetter.js';
 import PrintViewModifier from './PrintViewModifier.js';
 import TodayCountAppender from './TodayCountAppender.js';
-import PopupPrintCloseAdder from './PopupPrintCloseAdder.js'
-import ManageInBatchOptionsSetter from './ManageInBatchOptionsSetter.js'
-var host = 'http:\/\/163\.26\.71\.106\/toread\/';
+import PopupPrintCloseAdder from './PopupPrintCloseAdder.js';
+import ManageInBatchOptionsSetter from './ManageInBatchOptionsSetter.js';
 
-var reportsoptionsetter = new ReportsOptionSetter(host);
-var printviewmodifier = new PrintViewModifier(host);
-var todaycountappender = new TodayCountAppender(host);
-var popupprintcloseadder = new PopupPrintCloseAdder(host);
-var manageinbatchoptionssetter = new ManageInBatchOptionsSetter(host);
+const host = 'http://163.26.71.106/toread/';
+
+const reportsoptionsetter = new ReportsOptionSetter(host);
+const printviewmodifier = new PrintViewModifier(host);
+const todaycountappender = new TodayCountAppender(host);
+const popupprintcloseadder = new PopupPrintCloseAdder(host);
+const manageinbatchoptionssetter = new ManageInBatchOptionsSetter(host);
 
 printviewmodifier.setModifierToObserver();
 reportsoptionsetter.setReportsSetterToObserver();

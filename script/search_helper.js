@@ -62,7 +62,7 @@ export default class SearchHelper {
   nextpagepromise(link, book) {
     const helper = this;
     console.log(link);
-    return new Promise(((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       if (link === '#') {
         console.log(`booknotfound: ${book[0]}`);
 
@@ -97,7 +97,7 @@ export default class SearchHelper {
         req.onload = NextpageResponseHandler;
         req.send();
       }
-    }));
+    });
   }
 
   NormalAutolinkPromise(res) {

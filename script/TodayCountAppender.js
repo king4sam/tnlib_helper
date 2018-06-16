@@ -1,64 +1,63 @@
 import LibHost from './LibHost.js';
 
-export default class TodayCountAppender extends LibHost{
-	constructor(host){
-		super(host);
-		this.loan_desk = 'circulation\/pages\/loan_desk*';
-	};
+export default class TodayCountAppender extends LibHost {
+  constructor(host) {
+    super(host);
+    this.loan_desk = 'circulation/pages/loan_desk*';
+  }
 
-	getBorrowCount() {
-		//fetch records of book
-		// console.log($('#If_43 tr'));
-		var a = window.$('#If_43 tr').get();
-		a.shift();
+  getBorrowCount() {
+    // fetch records of book
+    // console.log($('#If_43 tr'));
+    const allBooks = window.$('#If_43 tr').get();
+    allBooks.shift();
 
-		var now = new Date();
+    const now = new Date();
 
-		function sameday(a, b) {
-			return a.getDate() === b.getDate() && a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear();
-		}
+    function sameDay(a, b) {
+      return a.getDate() === b.getDate()
+          && a.getMonth() === b.getMonth()
+          && a.getFullYear() === b.getFullYear();
+    }
 
-		function Sum(total, num) {
-			return total + num;
-		}
+    function sum(total, num) {
+      return total + num;
+    }
 
-		function istoday(e) {
-			var t = new Date(e.children[9].innerText);
-			return sameday(t, now) === true ? 1 : 0;
-		}
+    function isToday(e) {
+      const t = new Date(e.children[9].innerText);
+      return sameDay(t, now) === true ? 1 : 0;
+    }
 
-		return a.map(istoday).reduce(Sum, 0);
-	};
+    return allBooks.map(isToday).reduce(sum, 0);
+  }
 
-	add_row_of_borrowcount(count) {
-		return function(records){
-			var position_of_borrowcount = '#viewPatronDetailsComponent> tbody> tr> td >table >tbody> tr> td >table >tbody:last-child';
-			var reader = $(position_of_borrowcount)
-			if (reader.length !== 0) {
-				reader.append(
-					'<tr id = "todayborrowcount"><td><b>今日借書:</b>' +
-					'<font color="#2952A3" style="font-weight: bold;">' +
-					count() +
-					'</font></td></tr>'
-				);
-			}
-		}
-	};
+  addRowOfBorrowcount(count) {
+    return function (records) {
+      const positionOfBorrowcount = '#viewPatronDetailsComponent> tbody> tr> td >table >tbody> tr> td >table >tbody:last-child';
+      const reader = $(positionOfBorrowcount);
+      if (reader.length !== 0) {
+        reader.append(`<tr id = "todayborrowcount"><td><b>今日借書:</b>
+          <font color="#2952A3" style="font-weight: bold;">${count()}
+          </font></td></tr>`);
+      }
+    };
+  }
 
-	modify_borrowcount (count) {
-		return function(records){
-			$('#todayborrowcount font').innerText = count();
-		}
-	};
+  modifyBorrowcount(count) {
+    return function (records) {
+      $('#todayborrowcount font').innerText = count();
+    };
+  }
 
-	addTodayBorrowField(){
-		// console.log( this.getBorrowCount() );
-		var loan_desk_url = new RegExp(this.host + this.loan_desk);
-		if (loan_desk_url.test(location.href)) {
-			var PatronObserver = new MutationObserver(this.add_row_of_borrowcount(this.getBorrowCount));
-			var TransactionsObserver = new MutationObserver(this.modify_borrowcount(this.getBorrowCount));
-			PatronObserver.observe(document.getElementById('PatronItemDetails'), { 'childList': true, 'characterData': true });
-			TransactionsObserver.observe(document.getElementById('TransactionsContent'), { 'subtree': true, 'childList': true, 'characterData': true });
-		}
-	}
+  addTodayBorrowField() {
+    // console.log( this.getBorrowCount() );
+    const loandeskUrl = new RegExp(this.host + this.loan_desk);
+    if (loandeskUrl.test(window.location.href)) {
+      const PatronObserver = new MutationObserver(this.addRowOfBorrowcount(this.getBorrowCount));
+      const TransactionsObserver = new MutationObserver(this.modifyBorrowcount(this.getBorrowCount));
+      PatronObserver.observe(document.getElementById('PatronItemDetails'), { childList: true, characterData: true });
+      TransactionsObserver.observe(document.getElementById('TransactionsContent'), { subtree: true, childList: true, characterData: true });
+    }
+  }
 }
