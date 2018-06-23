@@ -16,7 +16,7 @@ export default class PopupPrintCloseAdder extends LibHost {
       closebtn.classList.add('dialog');
       closebtn.appendChild(document.createTextNode('close'));
       closebtn.onclick = function () { window.close(); };
-      $('table tr td').append(closebtn);
+      document.querySelector('table tr td').append(closebtn);
     }
   }
 }
