@@ -7,7 +7,7 @@ Sub 列印()
     Rows("1:6").Select
     Selection.Delete Shift:=xlUp
     
-    Range("A:A,C:C,D:D,E:E,H:H,I:I,K:K,L:L,M:M").Select
+    Range("A:A,C:C,E:E,F:F,H:H,I:I,K:K,L:L,M:M").Select
     Selection.Delete Shift:=xlToLeft
     
     Dim lRowCount As Long
