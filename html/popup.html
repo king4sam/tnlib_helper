@@ -22,12 +22,6 @@
     <li class="nav-item">
       <a class="nav-link" id="select-tab" data-toggle="tab" href="#select" role="tab" aria-controls="select" aria-selected="false">下拉式選單鎖定</a>
     </li>
-    <li class="nav-item">
-      <a class="nav-link" id="booktable-tab" data-toggle="tab" href="#booktable" role="tab" aria-controls="booktable" aria-selected="false">預約清單</a>
-    </li>
-    <li class="nav-item">
-      <a class="nav-link" id="uploadcsv1-tab" data-toggle="tab" href="#uploadcsv1" role="tab" aria-controls="uploadcsv1" aria-selected="false">上傳預約清單</a>
-    </li>
   </ul>
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade  show active" id="hotkeytable" role="tabpanel" aria-labelledby="hotkeytable-tab">
@@ -47,33 +41,6 @@
         </tbody>
       </table>
       <script type="text/javascript" src='hotkeytable.js'></script>
-    </div>
-    <div class="tab-pane fade" id="uploadcsv1" role="tabpanel" aria-labelledby="uploadcsv1-tab">
-      <button type="button" id='closebtn1' class="close" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <input type="file" id="fileForUpload1">
-      <div id='fileContents1'></div>
-      <button id="fileConfirm-btn1">確認上傳</button>
-      <script type="module" src = "./findcomments.js"></script>
-    </div>
-    <div class="tab-pane fade" id="booktable" role="tabpanel" aria-labelledby="booktable-tab">
-      <button type="button" id='closebtn2' class="close" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
-      <table id='commenttable' class="table table-striped" style="display: none">
-        <caption id='ctcap'></caption>
-        <thead>
-          <tr>
-            <th scope="col">條碼號</th>
-            <th scope="col">索書號</th>
-            <th scope="col">備註</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-      <script type="text/javascript" src='rendertable.js'></script>
     </div>
     <div class="tab-pane fade" id="select" role="tabpanel" aria-labelledby="select-tab">
       <div id = "selectscontainer" display = "block" >
