@@ -9,6 +9,18 @@ export default class ManageInBatchOptionsSetter extends LibHost {
   ManageInBatchOptionsInit() {
     const manageinbatchReg = new RegExp(this.host + this.manageinbatchPath);
     if (manageinbatchReg.test(this.getlocation())) {
+      const InputClear = function() {
+        try {
+          const listfiled = document.getElementById('listField');
+          listfiled.value = '';
+        } catch (e) {
+          console.log('no listField');
+        }
+      };
+
+      const AssignedReportsObserver = new MutationObserver(InputClear);
+      AssignedReportsObserver.observe(document.getElementById('results'), { subtree: true, childList: true });
+
       const editorExtensionId = 'oegakhbdmepmdfpeeanopebbglbfpgkp';
       // Make a simple request:
       chrome.runtime.sendMessage(

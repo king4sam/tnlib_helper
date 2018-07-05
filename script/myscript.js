@@ -6,37 +6,7 @@ script.setAttribute('src', chrome.extension.getURL('./script/main.js'));
 const head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
 head.insertBefore(script, head.lastChild);
 
-// (function (document) {
-//   const InputClear = function () {
-//     console.log('InputClear');
-//     try {
-//       const listfiled = document.getElementById('listField');
-//       listfiled.value = '';
-//     } catch (e) {
-//       console.log('no listField');
-//     }
-//   };
-//   const manageinbatch = new RegExp(`${host}internaltranzit/manage_in_batch*`);
-//   if (manageinbatch.test(window.location.href)) {
-//     const AssignedReportsObserver = new MutationObserver(InputClear);
-//     AssignedReportsObserver.observe(document.getElementById('results'), { subtree: true, childList: true });
-//     chrome.storage.local.get('selects', (results) => {
-//       if (chrome.runtime.lastError || undefined === results.selects) {
-//         console.log('no selects');
-//       } else if (results.selects.status === 'lock') {
-//         console.log('lock');
-//         const ps0 = document.getElementById('PropertySelection_0');
-//         ps0.value = results.selects.setting.PropertySelection_0;
-//         const icss = document.getElementById('itemCurrentStatusSelection');
-//         icss.value = results.selects.setting.itemCurrentStatusSelection;
-//       } else {
-//         console.log('release');
-//       }
-//     });
-//   }
-// }(document));
-
-(function (document) {
+(function(document) {
   chrome.storage.local.get('hotkeys', (results) => {
     let namecodemap;
     if (chrome.runtime.lastError || undefined === results.hotkeys) {
@@ -46,14 +16,11 @@ head.insertBefore(script, head.lastChild);
     }
 
     function keydowne(event) {
-      console.log(event.which);
-      console.log(event.keyCode);
       let x = event.which;
       if (x >= 65 && x <= 90) {
         x += 32;
       }
-      console.log(x);
-      const closeaction = function () {
+      const closeaction = function() {
         if ($('#closemeplease')[0] !== undefined) {
           event.preventDefault();
           $('#closemeplease')[0].click();
@@ -74,7 +41,7 @@ head.insertBefore(script, head.lastChild);
           $('#exceptionDialogHandle')[0].click();
         }
       };
-      const yesaction = function () {
+      const yesaction = function() {
         // attached fined
         if ($('#content-buttons a')[0] !== undefined) {
           event.preventDefault();
@@ -83,7 +50,7 @@ head.insertBefore(script, head.lastChild);
           inf.value = '';
         }
       };
-      const printaction = function () {
+      const printaction = function() {
         if ($('#HoldSlipDialog_content a')[0] !== undefined) {
           event.preventDefault();
           $('#HoldSlipDialog_content a')[0].click();
@@ -91,17 +58,17 @@ head.insertBefore(script, head.lastChild);
           inf.value = '';
         }
       };
-      const cardNumberFieldaction = function () {
+      const cardNumberFieldaction = function() {
         if (document.getElementById('cardNumberField')) {
           event.preventDefault();
           document.getElementById('cardNumberField').focus();
         }
       };
-      const loandeskaction = function () {
+      const loandeskaction = function() {
         event.preventDefault();
         window.location = '/toread/circulation/pages/loan_desk';
       };
-      const TransitItemsToBesendaction = function () {
+      const TransitItemsToBesendaction = function() {
         const TransitItemsToBesend = new RegExp(`${host}circulation/exttransit/transit_items_to_send`);
         if (TransitItemsToBesend.test(window.location.href)) {
           $('#TransferOperation > a')[1].click();
@@ -110,11 +77,6 @@ head.insertBefore(script, head.lastChild);
         }
         event.preventDefault();
       };
-      const managecloseaction = function () {
-        if ($('#closePopupTop')[0] !== undefined) {
-          $('#closePopupTop')[0].click();
-        }
-      };
 
       const keyconbinations = [
         { name: '取消、關閉、否', action: closeaction },
@@ -122,8 +84,7 @@ head.insertBefore(script, head.lastChild);
         { name: '列印', action: printaction },
         { name: '聚焦證號欄', action: cardNumberFieldaction },
         { name: '借還書作業', action: loandeskaction },
-        { name: '移轉寄送', action: TransitItemsToBesendaction },
-        { name: '關閉', action: managecloseaction },
+        { name: '移轉寄送', action: TransitItemsToBesendaction }
       ];
       const targetname = namecodemap.find(e => e.code === x);
       if (targetname) {
@@ -148,8 +109,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   const manageinbatch = new RegExp(`${host}internaltranzit/manage_in_batch*`);
   if (manageinbatch.test(window.location.href)) {
     let seletcObserver;
-    const setselect = function (cursta, proper) {
-      return function () {
+    const setselect = function(cursta, proper) {
+      return function() {
         $('#itemCurrentStatusSelection')[0].value = cursta;
         $('#PropertySelection_0')[0].value = proper;
       };
@@ -192,4 +153,3 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     window.location.reload();
   }
 });
-
