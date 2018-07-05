@@ -9,7 +9,7 @@ export default class TodayCountAppender extends LibHost {
   getBorrowCount() {
     // fetch records of book
     // console.log($('#If_43 tr'));
-    const allBooks = window.$('#If_43 tr').get();
+    let allBooks = Array.apply(null, document.querySelectorAll('#If_43 tr'));
     allBooks.shift();
 
     const now = new Date();
