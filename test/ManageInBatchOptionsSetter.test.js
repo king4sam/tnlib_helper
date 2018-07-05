@@ -56,6 +56,7 @@ describe("ManageInBatchOptionsSetter.js", () => {
     let getele = sinon.stub(document, "getElementById");
     getele.withArgs('PropertySelection_0').returns(property0);
     getele.withArgs('itemCurrentStatusSelection').returns(curele);
+    getele.withArgs('results').returns(document.createElement('div'));
 
     libhost.ManageInBatchOptionsInit();
 
