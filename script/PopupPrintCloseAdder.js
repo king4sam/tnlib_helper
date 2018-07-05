@@ -10,7 +10,7 @@ export default class PopupPrintCloseAdder extends LibHost {
 
   addCloseButton() {
     const TransitItemsToBeReceived = new RegExp(this.host + this.popupprint);
-    if (TransitItemsToBeReceived.test(window.location.href)) {
+    if (TransitItemsToBeReceived.test(this.getlocation())) {
       const closebtn = document.createElement('a');
       closebtn.id = 'closemeplease';
       closebtn.classList.add('dialog');
