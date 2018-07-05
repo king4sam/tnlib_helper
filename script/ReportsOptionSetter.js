@@ -36,10 +36,10 @@ export default class ReportsOptionSetter extends LibHost {
     const exttransitUrl = new RegExp(this.host + this.exttransit);
     const searchUrl = new RegExp(this.host + this.search);
     const options = { subtree: true, childList: true, characterData: true };
-    if (exttransitUrl.test(window.location.href) && document.getElementById('AssignedReports') !== null) {
+    if (exttransitUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
       const exttransitReportsObserver = new MutationObserver(this.setExttransitReportsOptions);
       exttransitReportsObserver.observe(document.getElementById('AssignedReports'), options);
-    } else if (searchUrl.test(window.location.href) && document.getElementById('AssignedReports') !== null) {
+    } else if (searchUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
       const searchReportsObserver = new MutationObserver(this.setSearchReportsOptions);
       searchReportsObserver.observe(document.getElementById('AssignedReports'), options);
     }
