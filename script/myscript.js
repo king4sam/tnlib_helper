@@ -7,7 +7,7 @@ const head = document.head || document.getElementsByTagName('head')[0] || docume
 head.insertBefore(script, head.lastChild);
 
 (function(document) {
-  chrome.storage.local.get('hotkeys', (results) => {
+  chrome.storage.sync.get('hotkeys', (results) => {
     let namecodemap;
     if (chrome.runtime.lastError || undefined === results.hotkeys) {
       console.log('storage err');

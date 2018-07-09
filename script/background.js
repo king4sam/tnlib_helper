@@ -25,17 +25,17 @@ chrome.runtime.onInstalled.addListener(() => {
     { name: '移轉寄送', code: 59 },
   ];
   const selects = { status: 'release' };
-  chrome.storage.local.set({ hotkeys: namecodemap });
-  chrome.storage.local.set({ selects });
+  chrome.storage.sync.set({ hotkeys: namecodemap });
+  chrome.storage.sync.set({ selects });
 });
 
 chrome.runtime.onStartup.addListener(() => {
   console.log('I started up!');
-  chrome.storage.local.get('hotkeys', (results) => {
+  chrome.storage.sync.get('hotkeys', (results) => {
     if (chrome.runtime.lastError) {
-      console.log('storage local err');
+      console.log('storage sync err');
     } else if (undefined === results.hotkeys) {
-      console.log('local reset');
+      console.log('sync reset');
       const namecodemap = [
         { name: '取消、關閉、否', code: 99 },
         { name: '是、確定', code: 121 },
@@ -44,7 +44,7 @@ chrome.runtime.onStartup.addListener(() => {
         { name: '借還書作業', code: 39 },
         { name: '移轉寄送', code: 59 },
       ];
-      chrome.storage.local.set({ hotkeys: namecodemap });
+      chrome.storage.sync.set({ hotkeys: namecodemap });
     } else {
       console.log(results.hotkeys);
     }
@@ -57,7 +57,7 @@ chrome.runtime.onMessageExternal.addListener((request, sender, sendResponse) => 
     console.log(request);
     console.log(sender);
     const ps = new Promise((resolve, reject) => {
-      chrome.storage.local.get('selects', (results) => {
+      chrome.storage.sync.get('selects', (results) => {
         console.log(results);
         if (chrome.runtime.lastError) {
           reject(Error('err'));

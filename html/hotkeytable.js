@@ -28,14 +28,14 @@ document.getElementById('reset').onclick = function () {
     { name: '移轉寄送', code: 59 },
   ];
   const selects = { status: 'release' };
-  chrome.storage.local.set({ hotkeys: namecodemap });
-  chrome.storage.local.set({ selects });
+  chrome.storage.sync.set({ hotkeys: namecodemap });
+  chrome.storage.sync.set({ selects });
   namecodemap.forEach((e) => {
     $(`#${e.name}`)[0].value = String.fromCharCode(e.code);
   });
 };
 
-chrome.storage.local.get('hotkeys', (results) => {
+chrome.storage.sync.get('hotkeys', (results) => {
   let namecodemap;
   if (chrome.runtime.lastError || undefined === results.hotkeys) {
     console.log('no hotkeys');
@@ -74,7 +74,7 @@ chrome.storage.local.get('hotkeys', (results) => {
         $('#hotkeysetter').bootstrapToggle('off');
       } else {
         $('#hotkeytable > tbody > tr > td > span').remove();
-        chrome.storage.local.set({ hotkeys: maps });
+        chrome.storage.sync.set({ hotkeys: maps });
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, { query: 'reload' }, (response) => {
             console.log(response);

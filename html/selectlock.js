@@ -22,7 +22,7 @@ const switchonchange = function (opacele, statusele) {
       opacele.disabled = true;
       statusele.disabled = true;
       const selects = { status: 'lock', setting };
-      chrome.storage.local.set({ selects }, () => {
+      chrome.storage.sync.set({ selects }, () => {
         console.log('set');
       });
     } else {
@@ -31,7 +31,7 @@ const switchonchange = function (opacele, statusele) {
       opacele.disabled = false;
       statusele.disabled = false;
       const selects = { status: 'release' };
-      chrome.storage.local.set({ selects }, () => {
+      chrome.storage.sync.set({ selects }, () => {
         console.log('set');
       });
     }
@@ -39,7 +39,7 @@ const switchonchange = function (opacele, statusele) {
 };
 
 $('#selectlocker').bootstrapToggle('off');
-chrome.storage.local.get('selects', (results) => {
+chrome.storage.sync.get('selects', (results) => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     console.log(tabs[0]);
 
