@@ -1,93 +1,93 @@
 function reqListener(req) {
-    let index = req.target.index;
-    var regex = /(條碼：(.+))，/g;
-    const BarcodeGroupNumber = 2;
-    const IndexofCheckcol = 7;
-    const statuscol = 3;
-    var matches;
-    var anding = /^ED\d{7}/g;
-    var barcodes = [];
-    var popover_content_ary = [];
-    var trs = $("table[class='tab1'] tr").toArray().slice(1, -1);
-    while ((matches = regex.exec(this.responseText)) !== null) {
+  const { index } = req.target;
+  const regex = /(條碼：(.+))，/g;
+  const BarcodeGroupNumber = 2;
+  const IndexofCheckcol = 7;
+  const statuscol = 3;
+  const anding = /^ED\d{7}/g;
+  const barcodes = [];
+  const targettrs = $('table[class=\'tab1\'] tr').toArray().slice(1, -1);
+  const parser = new DOMParser();
+  const htmlDoc = parser.parseFromString(req.target.response, 'text/html');
+  const submitbook = htmlDoc.querySelectorAll('#___01 > tbody > tr:nth-child(3) > td > div > div:nth-child(2) > form > table > tbody > tr:nth-child(5) > td:nth-child(2) > div');
+  submitbook.forEach((e) => {
+    if (!e.children[0].checked) {
+      let matches = regex.exec(e.innerText);
+      while (matches !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
         if (matches.index === regex.lastIndex) {
-            regex.lastIndex++;
+          regex.lastIndex += 1;
         }
-        //if the books was arrived, hightlight the row in table
-        barcodes.push(matches[BarcodeGroupNumber])
+        // if the books was arrived, hightlight the row in table
+        barcodes.push(matches[BarcodeGroupNumber]);
+        matches = regex.exec(e.innerText);
+      }
     }
-    var bookrequests = barcodes.map(function(barcode) {
-        return get_bookpage([barcode]);
+  });
+  const bookrequests = barcodes.map(barcode => getbookpage([barcode]));
+  Promise.all(bookrequests)
+    .then((ress) => {
+      const PopoverContentAry = [];
+      console.log(ress);
+      const FoundPages = ress.filter(p => p !== 'booknotfound' && p !== 'errpage');
+      console.log(FoundPages);
+      FoundPages.forEach((e) => {
+        console.log(e);
+        const barcode = e.book[0];
+        const resdoc = new DOMParser().parseFromString(e.response, 'text/html');
+        const trs = Array(...resdoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
+          .filter(tr => tr.children[0].innerText.trim() === e.book[0]);
+        const bookname = resdoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
+        if (anding.test(barcode)) {
+          if (trs.length !== 0 && trs[0].children[statuscol].innerText.trim() === '在架') {
+            trs.push({ bookname, barcode, status: '在架' });
+          } else if (trs.length !== 0 && trs[0].children[statuscol].innerText.trim() === '預約保留') {
+            PopoverContentAry.push({ bookname, barcode, status: '預約保留' });
+          } else {
+            PopoverContentAry.push({ bookname, barcode, status: '未到' });
+          }
+        } else if (trs.length !== 0 && trs[0].children[statuscol].innerText.trim() === '預約保留') {
+          PopoverContentAry.push({ bookname, barcode, status: '預約保留' });
+        } else {
+          PopoverContentAry.push({ bookname, barcode, status: '未到' });
+        }
+      });
+      return PopoverContentAry;
+    })
+    .then((PopoverContentAry) => {
+      if (PopoverContentAry.filter(e => e.status !== '未到').length > 0) {
+        // console.log(trs);
+        // console.log(index);
+        targettrs[index].children[IndexofCheckcol - 1].style.backgroundColor = '#fbff0075';
+      }
+      const tdele = targettrs[index].children[IndexofCheckcol - 1];
+      $(tdele).popover({
+        toggle: 'popover',
+        html: true,
+        trigger: 'click',
+        container: 'body',
+        placement: 'bottom',
+        content() {
+          return `<table>${
+            PopoverContentAry.reduce(
+              (a, c) => `${a}<tr><td>${c.bookname}</td><td>${c.barcode}</td><td>${c.status}</td></tr>`
+              , '',
+            )
+          }</table>`;
+        },
+      });
     });
-    Promise.all(bookrequests)
-        .then(function(ress) {
-            var popover_content_ary = [];
-            console.log(ress);
-            var found_pages = ress.filter(p => { return p !== 'booknotfound' && p !== 'errpage' });
-            console.log(found_pages);
-            found_pages.forEach(e => {
-                console.log(e);
-                var barcode = e.book[0];
-                var htmlDoc = new DOMParser().parseFromString(e.response, "text/html");
-                var tr = Array.apply(null, htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
-                    .filter(function(tr) {
-                        return tr.children[0].innerText.trim() == e.book[0]
-                    });
-                var bookname = htmlDoc.getElementsByTagName('h2')[1].innerText.slice(0, -1).trim();
-                if (anding.test(barcode)) {
-                    if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '在架') {
-                        popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '在架' });
-                    } else if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '預約保留') {
-                        popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '預約保留' });
-                    } else {
-                        popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '未到' });
-                    }
-                } else {
-                    if (tr.length !== 0 && tr[0].children[statuscol].innerText.trim() == '預約保留') {
-                        popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '預約保留' });
-                    } else {
-                        popover_content_ary.push({ 'bookname': bookname, 'barcode': barcode, 'status': '未到' });
-                    }
-                }
-            })
-            return popover_content_ary;
-        })
-        .then(function(popover_content_ary) {
-            if (popover_content_ary.filter(function(e) {
-                    return e['status'] !== '未到';
-                }).length > 0) {
-                console.log(trs);
-                console.log(index);
-                trs[index].children[IndexofCheckcol - 1].style.backgroundColor = '#fbff0075';
-            }
-            var tdele = trs[index].children[IndexofCheckcol - 1];
-            $(tdele).popover({
-                toggle: 'popover',
-                html: true,
-                trigger: 'click',
-                container: 'body',
-                placement: 'bottom',
-                content: function() {
-                    return '<table>' +
-                        popover_content_ary.reduce(function(a, c) {
-                            return a + "<tr><td>" + c['bookname'] + '</td><td>' + c['barcode'] + "</td><td>" + c['status'] + "</td></tr>"
-                        }, "") +
-                        '</table>';
-                }
-            });
-        })
 }
 
-//parse urls for reservations
-var urls = $('table[class=tab1] tr td a').toArray().slice(0, -4).map(function(e) { return e.href });
+// parse urls for reservations
+const urls = $('table[class=tab1] tr td a').toArray().slice(0, -4).map(e => e.href);
 
-//fetch page to get barcode of books
-urls.forEach(function(e, i) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', e);
-    xhr.index = i;
-    xhr.withCredentials = true;
-    xhr.onload = reqListener;
-    xhr.send();
+// fetch page to get barcode of books
+urls.forEach((e, i) => {
+  const xhr = new XMLHttpRequest();
+  xhr.open('GET', e);
+  xhr.index = i;
+  xhr.withCredentials = true;
+  xhr.onload = reqListener;
+  xhr.send();
 });

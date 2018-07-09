@@ -1,192 +1,200 @@
-const max_Retry = 10;
-const host = 'http:\/\/163.26.71.106\/';
-const webpac = 'webpac\/';
-const search = 'webpac\/search.cfm'
-const par1 = '?m=ss&k0=';
-const par2 = '&t0=k&c0=and';
-const searchengin_host = 'http://163.26.71.106';
+export default class SearchHelper {
+  constructor(host) {
+    // console.log(this)
+    this.Maxretry = 10;
+    this.Webpac = 'webpac/';
+    this.Search = 'webpac/search.cfm';
+    this.Par1 = '?m=ss&k0=';
+    this.Par2 = '&t0=k&c0=and';
+    this.Host = host;
+    this.tnlibxmlgetinit = this.tnlibxmlgetinit.bind(this);
+    this.nextpagepromise = this.nextpagepromise.bind(this);
+    this.NormalSearchPromise = this.NormalSearchPromise.bind(this);
+    this.NormalAutolinkPromise = this.NormalAutolinkPromise.bind(this);
+    this.getbookpage = this.getbookpage.bind(this);
+    Object.defineProperty(Promise, 'retry', {
+      configurable: true,
+      writable: true,
+      value: function retry(retries, executor) {
+        // console.log(`${retries} retries left!`)
 
-var iserrpage = function(htmlDoc){
-	var err = htmlDoc.querySelectorAll('img[alt="error_refresh"]');
-	if(err.length > 0){
-		console.log('pageerr')
-		return true;
-	}
-	else{
-		return false;
-	}
-}
+        if (typeof retries !== 'number') {
+          throw new TypeError('retries is not a number');
+        }
 
-Object.defineProperty(Promise, 'retry', {
-	configurable: true,
-	writable: true,
-	value: function retry(retries, executor) {
-		// console.log(`${retries} retries left!`)
+        const promise = new Promise(executor);
 
-		if (typeof retries !== 'number') {
-			throw new TypeError('retries is not a number')
-		}
+        if (retries > 0) {
+          return promise.catch(() => Promise.retry(retries - 1, executor));
+        }
 
-		const promise = new Promise(executor)
+        return promise;
+      },
+    });
+  }
 
-		if (retries > 0) {
-			return promise.catch(error => Promise.retry(--retries, executor))
-		}
+  getbooktrs(htmlDoc, book) {
+    if (htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr').length === 0) {
+      return null;
+    }
+    return Array.from(htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
+      .filter(e => e.children[0].innerText.trim() === book[0]);
+  }
 
-		return promise
-	}
-})
+  iserrpage(htmlDoc) {
+    const err = htmlDoc.querySelectorAll('img[alt="error_refresh"]');
+    if (err.length > 0) {
+      console.log('pageerr');
+      return true;
+    }
+    return false;
+  }
 
-var tnlib_xmlget_init = function(url, book) {
-	var req = new XMLHttpRequest();
-	req.open('GET', url);
-	req.setRequestHeader('Accept', '	text/html');
-	req.setRequestHeader('Access-Control-Allow-Origin', searchengin_host);
-	req.book = book;
-	return req;
-}
+  tnlibxmlgetinit(url, book) {
+    const req = new XMLHttpRequest();
+    req.open('GET', url);
+    req.setRequestHeader('Accept', 'text/html');
+    req.setRequestHeader('Access-Control-Allow-Origin', '*');
+    req.book = book;
+    return req;
+  }
 
-var nextpage_promise = function(link,book){
-	console.log(link);
-	return new Promise(function(resolve,reject){
-		if(link == '#'){
-			console.log('booknotfound: ' + book[0]);
-			// console.log('notfound');
-			resolve('booknotfound');
-		}else{
-			var req = tnlib_xmlget_init(host + webpac + link, book);
-			req.onerror = function() {
-				reject(Error("Network Error"));
-			};
-			var nextpage_response_handler = function(res){
-				if (res.target.status == 200) {
-					var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-					var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
-					if(iserrpage(htmlDoc)){
-						// reject(Error('errpage'));
-						console.log('errpage')
-						console.log(res.target.responseURL)
-						reject(Error('errpage'));
-					}
-					// if(links.length === 0){
-					// 	reject(Error('nolinks'));
-					// }
-					var nextlink = links[links.length-1].getAttribute('href');
-					var tr = get_booktrs(htmlDoc,res.target.book);
-					if (tr.length !== 0) {
-						resolve(res.target);
-					}else {
-						resolve(nextpage_promise(nextlink,book));
-					}
-				}
-			}
+  nextpagepromise(link, book) {
+    const helper = this;
+    console.log(link);
+    return new Promise((resolve, reject) => {
+      if (link === '#') {
+        console.log(`booknotfound: ${book[0]}`);
 
-			req.onload = nextpage_response_handler;
-			req.send();
-		}
-	})
-}
+        // console.log('notfound');
+        resolve('booknotfound');
+      } else {
+        const req = helper.tnlibxmlgetinit(helper.Host + helper.Webpac + link, book);
+        req.onerror = function () {
+          reject(Error('Network Error'));
+        };
+        const NextpageResponseHandler = function (res) {
+          if (res.target.status === 200) {
+            const htmlDoc = new DOMParser().parseFromString(res.target.response, 'text/html');
+            const links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
+            if (helper.iserrpage(htmlDoc)) {
+              // reject(Error('errpage'));
+              console.log('errpage');
+              console.log(res.target.responseURL);
+              reject(Error('errpage'));
+            }
 
-var get_booktrs = function(htmlDoc, book){
-	if( htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr').length === 0)
-		return null;
-	else{
-		return Array.from(htmlDoc.querySelectorAll('#rdk_content_1 >table > tbody > tr'))
-			.filter(function(e){
-				return e.children[0].innerText.trim() == book[0]
-			});
-	}
-}
+            const nextlink = links[links.length - 1].getAttribute('href');
+            const tr = helper.getbooktrs(htmlDoc, res.target.book);
+            if (tr.length !== 0) {
+              resolve(res.target);
+            } else {
+              resolve(helper.nextpagepromise(nextlink, book));
+            }
+          }
+        };
 
-var normalautolink_promise = function(res) {
-	return Promise.retry(max_Retry, function(resolve, reject) {
-		if (res.target.status == 200) {
-			var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-			if(iserrpage(htmlDoc)){
-				// reject(Error('errpage'));
-				// console.log('errpage');
-				// console.log(res.target.responseURL)
-				reject(Error('errpage'));
-			}
-			var links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
-			var tr = get_booktrs(htmlDoc,res.target.book);
-			var bookname = htmlDoc.getElementsByTagName('h2')[1];
-			var nextlink = links[links.length-1].getAttribute('href');
-			console.log(nextlink);
-			if (tr.length !== 0) {
-				resolve(res.target);
-			} else {
-				resolve(nextpage_promise(nextlink,res.target.book));
-			}
-		} else {
-			reject(Error('Network Error'));
-		}
-	})
-}
+        req.onload = NextpageResponseHandler;
+        req.send();
+      }
+    });
+  }
 
-var normalsearch_promise = function(res) {
-	return Promise.retry(max_Retry, function(resolve, reject) {
-		var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-		var autolink = htmlDoc.getElementById('autolink');
+  NormalAutolinkPromise(res) {
+    const helper = this;
+    return Promise.retry(10, (resolve, reject) => {
+      if (res.target.status === 200) {
+        const htmlDoc = new DOMParser().parseFromString(res.target.response, 'text/html');
+        if (helper.iserrpage(htmlDoc)) {
+          // reject(Error('errpage'));
+          // console.log('errpage');
+          // console.log(res.target.responseURL)
+          reject(Error('errpage'));
+        }
+        const links = htmlDoc.querySelectorAll('div[class="page_Num chg_page"]:nth-of-type(3) > a');
+        const tr = helper.getbooktrs(htmlDoc, res.target.book);
+        // let bookname = htmlDoc.getElementsByTagName( 'h2' )[1];
+        const nextlink = links[links.length - 1].getAttribute('href');
+        console.log(nextlink);
+        if (tr.length !== 0) {
+          resolve(res.target);
+        } else {
+          resolve(helper.nextpagepromise(nextlink, res.target.book));
+        }
+      } else {
+        reject(Error('Network Error'));
+      }
+    });
+  }
 
-		var req = tnlib_xmlget_init(host + webpac + autolink.getAttribute('href'), res.target.book);
-		req.onerror = function() {
-			reject(Error("Network Error"));
-		};
+  NormalSearchPromise(res) {
+    const helper = this;
+    return Promise.retry(10, (resolve, reject) => {
+      // console.log(helper);
+      const htmlDoc = new DOMParser().parseFromString(res.target.response, 'text/html');
+      const autolink = htmlDoc.getElementById('autolink');
 
-		var autolink_response_handler = function(res) {
-			if (res.target.status == 200) {
-				var htmlDoc = new DOMParser().parseFromString(res.target.response, "text/html");
-				if(iserrpage(htmlDoc)){
-					// reject(Error('errpage'));
-						console.log('errpage');
-						console.log(res.target.responseURL)
-				}
-				resolve(res);
-			} else {
-				reject(Error('Network Error'));
-			}
-		}
-		req.onload = autolink_response_handler;
-		req.send();
-	})
-}
+      const req = helper.tnlibxmlgetinit(helper.Host + helper.Webpac + autolink.getAttribute('href'), res.target.book);
+      req.onerror = function () {
+        reject(Error('Network Error'));
+      };
 
-var get_bookpage = function(book) {
-	return Promise.retry(max_Retry, function(resolve, reject) {
-		var search_response_handler = function(res) {
-			var parser = new DOMParser();
-			var htmlDoc = parser.parseFromString(res.target.response, "text/html");
-			var autolink = htmlDoc.getElementById('autolink');
-			if (res.target.status == 200) {
-				if( iserrpage(htmlDoc) || autolink === null){
-					// reject(Error('errpage'));
-					// console.log('errpage');
-					// console.log(res.target.responseURL);
-					reject('noautolink');
-				}
-				else{
-					resolve(res);
-				}
-				// Resolve the promise with the response text
-				
-			} else {
-				reject(Error('Network Error'));
-			}
-		}
-		var req = tnlib_xmlget_init(host + search + par1 + book[0] + par2, book);
-		req.onload = search_response_handler;
+      const AutolinkResponseHandler = function (AutolinkResponse) {
+        if (AutolinkResponse.target.status === 200) {
+          const reshtmlDoc = new DOMParser().parseFromString(AutolinkResponse.target.response, 'text/html');
+          if (helper.iserrpage(reshtmlDoc)) {
+            // reject(Error('errpage'));
+            console.log('errpage');
+            console.log(AutolinkResponse.target.responseURL);
+          }
+          resolve(AutolinkResponse);
+        } else {
+          reject(Error('Network Error'));
+        }
+      };
+      req.onload = AutolinkResponseHandler;
+      req.send();
+    });
+  }
 
-		req.onerror = function() {
-			reject(Error("Network Error"));
-		};
+  getbookpage(book) {
+    const helper = this;
+    return Promise.retry(10, (resolve, reject) => {
+      const SearchResponseHandler = function (res) {
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(res.target.response, 'text/html');
+        const autolink = htmlDoc.getElementById('autolink');
+        if (res.target.status === 200) {
+          if (helper.iserrpage(htmlDoc) || autolink === null) {
+            // reject(Error('errpage'));
+            // console.log('errpage');
+            // console.log(res.target.responseURL);
+            reject('noautolink');
+          } else {
+            resolve(res);
+          }
 
-		req.send();
-	}).then(normalsearch_promise)
-	.then(normalautolink_promise)
-	.catch(err=>{
-		// console.log('caught ') ; 
-		// console.log(err);
-		return 'errpage';
-	});
+          // Resolve the promise with the response text
+        } else {
+          reject(Error('Network Error'));
+        }
+      };
+      const url = helper.Host + helper.Search + helper.Par1 + book[0] + helper.Par2;
+      const req = helper.tnlibxmlgetinit(url, book);
+      req.onload = SearchResponseHandler;
+
+      req.onerror = function (err) {
+        console.log(err);
+        reject(Error('Network Error on error'));
+      };
+
+      req.send();
+    }).then(helper.NormalSearchPromise)
+      .then(helper.NormalAutolinkPromise)
+      .catch((err) => {
+        // console.log('caught ') ;
+        console.log(err);
+        return 'errpage';
+      });
+  }
 }
