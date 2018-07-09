@@ -2,10 +2,16 @@
   "name": "tnlib_helper",
   "version": "0.6",
   "description": "Helper extension for Tainan Public Libraries",
-  "permissions": ["activeTab", "declarativeContent","tabs","storage","http://163.26.71.106/","http://163.26.71.107/"],
+  "permissions": ["activeTab", "declarativeContent","tabs","storage","http://163.26.71.106/","http://163.26.71.107/","http://anding-lib.tainan.gov.tw/"],
   "content_scripts": [
     {
       "matches": ["http://163.26.71.106/*"],
+      "js": ["script/lib/jquery-3.3.1.min.js", "script/myscript.js"],
+      "run_at":"document_end"
+    }
+    ,
+    {
+      "matches": ["http://163.26.71.107/*"],
       "js": ["script/lib/jquery-3.3.1.min.js", "script/myscript.js"],
       "run_at":"document_end"
     }
@@ -45,7 +51,8 @@
     "script/main.js"
   ],
   "externally_connectable": {
-    "matches": ["http://163.26.71.106/*"]
+    "matches": ["http://163.26.71.106/*"],
+    "matches": ["http://163.26.71.107/*"]
   },
   "manifest_version": 2
 }

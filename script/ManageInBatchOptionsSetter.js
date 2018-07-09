@@ -7,7 +7,7 @@ export default class ManageInBatchOptionsSetter extends LibHost {
   }
 
   ManageInBatchOptionsInit() {
-    const manageinbatchReg = new RegExp(this.host + this.manageinbatchPath);
+    const manageinbatchReg = new RegExp(this.manageinbatchPath);
     if (manageinbatchReg.test(this.getlocation())) {
       const InputClear = function() {
         try {
