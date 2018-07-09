@@ -52,7 +52,7 @@ export default class TodayCountAppender extends LibHost {
 
   addTodayBorrowField() {
     // console.log( this.getBorrowCount() );
-    const loandeskUrl = new RegExp(this.host + this.loan_desk);
+    const loandeskUrl = new RegExp(this.loan_desk);
     if (loandeskUrl.test(window.location.href)) {
       const PatronObserver = new MutationObserver(this.addRowOfBorrowcount(this.getBorrowCount));
       const TransactionsObserver = new MutationObserver(this.modifyBorrowcount(this.getBorrowCount));

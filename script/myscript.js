@@ -69,7 +69,7 @@ head.insertBefore(script, head.lastChild);
         window.location = '/toread/circulation/pages/loan_desk';
       };
       const TransitItemsToBesendaction = function() {
-        const TransitItemsToBesend = new RegExp(`${host}circulation/exttransit/transit_items_to_send`);
+        const TransitItemsToBesend = new RegExp(`circulation/exttransit/transit_items_to_send`);
         if (TransitItemsToBesend.test(window.location.href)) {
           $('#TransferOperation > a')[1].click();
         } else {
