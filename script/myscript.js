@@ -106,45 +106,55 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     `from a content script:${sender.tab.url}` :
     'from the extension');
 
-  const manageinbatch = new RegExp(`${host}internaltranzit/manage_in_batch*`);
-  if (manageinbatch.test(window.location.href)) {
+  const manageinbatch = new RegExp(`internaltranzit/manage_in_batch*`);
+  if (manageinbatch.test(location.href)) {
     let seletcObserver;
-    const setselect = function(cursta, proper) {
-      return function() {
+    var setselect = function(cursta, proper, selected) {
+
+      return function(records) {
         $('#itemCurrentStatusSelection')[0].value = cursta;
         $('#PropertySelection_0')[0].value = proper;
-      };
+        if (selected.value !== -1) {
+          document.getElementById('elementName').value = selected.text;
+          document.getElementById('selectedElement').value = selected.value;
+        }
+        console.log(selected);
+      }
     };
 
-    const obtarget = document.getElementById('HiddenBrowse');
-    if (request.query === 'selects') {
-      console.log('selects');
-      const arys = [];
-      arys.push(document.getElementById('itemCurrentStatusSelection').outerHTML);
-      arys.push(document.getElementById('PropertySelection_0').outerHTML);
+    var obtarget = document.getElementById('HiddenBrowse');
+    if (request.query == "selects") {
+      console.log("selects");
+      var arys = []
+      arys.push(document.getElementById("itemCurrentStatusSelection").outerHTML);
+      arys.push(document.getElementById("PropertySelection_0").outerHTML);
+      arys.push(document.getElementById("locationArea").outerHTML);
       sendResponse({ selects: arys });
-    } else if (request.query === 'lock') {
-      if (seletcObserver !== undefined) {
+    } else if (request.query == "lock") {
+      if (seletcObserver !== undefined)
         seletcObserver.disconnect();
+      seletcObserver = new MutationObserver(
+        setselect(request.setting.itemCurrentStatusSelection, request.setting.PropertySelection_0, request.setting.selected)
+      )
+      document.getElementById("PropertySelection_0").value = request.setting.PropertySelection_0;
+      document.getElementById("itemCurrentStatusSelection").value = request.setting.itemCurrentStatusSelection;
+      if (request.setting.selected.value !== -1) {
+        document.getElementById("elementName").value = request.setting.selected.text;
+        document.getElementById("selectedElement").value = request.setting.selected.value;
       }
-      const ic = request.setting.itemCurrentStatusSelection;
-      const ps = request.setting.PropertySelection_0;
-      const observeHandler = setselect(ic, ps);
-      seletcObserver = new MutationObserver(observeHandler);
-      document.getElementById('PropertySelection_0').value = request.setting.PropertySelection_0;
-      document.getElementById('itemCurrentStatusSelection').value = request.setting.itemCurrentStatusSelection;
-      seletcObserver.observe(obtarget, { childList: true });
-      console.log('lock');
+      seletcObserver.observe(obtarget, { 'childList': true });
+      console.log("lock");
       console.log(request.setting);
-      sendResponse({ status: 'OK' });
-    } else if (request.query === 'release') {
-      if (seletcObserver !== undefined) {
+      sendResponse({ status: "OK" });
+    } else if (request.query == "release") {
+      if (seletcObserver !== undefined)
         seletcObserver.disconnect();
-      }
-      document.getElementById('PropertySelection_0').value = 0;
-      document.getElementById('itemCurrentStatusSelection').value = 0;
-      console.log('release');
-      sendResponse({ status: 'OK' });
+      document.getElementById("PropertySelection_0").value = 0;
+      document.getElementById("itemCurrentStatusSelection").value = 0;
+      document.getElementById("elementName").value = '';
+      document.getElementById("selectedElement").value = '';
+      console.log("release");
+      sendResponse({ status: "OK" });
     }
   }
 
