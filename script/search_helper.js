@@ -1,4 +1,4 @@
-export default class SearchHelper {
+class SearchHelper {
   constructor(host) {
     // console.log(this)
     this.Maxretry = 10;

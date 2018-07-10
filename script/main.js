@@ -1,5 +1,3 @@
-
-
 import ReportsOptionSetter from './ReportsOptionSetter.js';
 import PrintViewModifier from './PrintViewModifier.js';
 import TodayCountAppender from './TodayCountAppender.js';

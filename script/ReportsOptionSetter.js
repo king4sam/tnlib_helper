@@ -13,23 +13,29 @@ export default class ReportsOptionSetter extends LibHost {
     this.ps8 = 'PropertySelection_8';
   }
 
-  setExttransitReportsOptions() {
-    try {
-      document.getElementById(this.ps5).selectedIndex = '1';
-      document.getElementById(this.ps6).selectedIndex = '2';
-      document.getElementById(this.ps7).selectedIndex = '3';
-    } catch (e) {
-      console.log('no AssignedReports');
+  setExttransitReportsOptions(eles) {
+    return function() {
+        try {
+          document.getElementById(eles.ps5).selectedIndex = '1';
+          document.getElementById(eles.ps6).selectedIndex = '2';
+          document.getElementById(eles.ps7).selectedIndex = '3';
+        } catch (e) {
+          console.log('no AssignedReports');
+        }
     }
+    
   }
 
-  setSearchReportsOptions() {
-    try {
-      document.getElementById(this.ps7).selectedIndex = '1';
-      document.getElementById(this.ps8).selectedIndex = '2';
-    } catch (e) {
-      console.log('no AssignedReports');
+  setSearchReportsOptions(eles) {
+    return function(){
+          try {
+          document.getElementById(eles.ps7).selectedIndex = '1';
+          document.getElementById(eles.ps8).selectedIndex = '2';
+        } catch (e) {
+          console.log('no AssignedReports');
+        }
     }
+
   }
 
   setReportsSetterToObserver() {
@@ -37,10 +43,12 @@ export default class ReportsOptionSetter extends LibHost {
     const searchUrl = new RegExp(this.search);
     const options = { subtree: true, childList: true, characterData: true };
     if (exttransitUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
-      const exttransitReportsObserver = new MutationObserver(this.setExttransitReportsOptions);
+      var eles = {ps5 : this.ps5, ps6 : this.ps6, ps7 : this.ps7};
+      const exttransitReportsObserver = new MutationObserver(this.setExttransitReportsOptions(eles));
       exttransitReportsObserver.observe(document.getElementById('AssignedReports'), options);
     } else if (searchUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
-      const searchReportsObserver = new MutationObserver(this.setSearchReportsOptions);
+      var eles = {ps7 : this.ps7, ps8 : this.ps8};
+      const searchReportsObserver = new MutationObserver(this.setSearchReportsOptions(eles));
       searchReportsObserver.observe(document.getElementById('AssignedReports'), options);
     }
   }
