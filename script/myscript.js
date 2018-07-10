@@ -11,8 +11,17 @@ head.insertBefore(extensionid,head.lastChild);
 const script = document.createElement('script');
 script.setAttribute('type', 'module');
 script.setAttribute('src', chrome.extension.getURL('./script/main.js'));
-const head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
 head.insertBefore(script, head.lastChild);
+
+
+const toread = new RegExp(`/toread/`);
+if (toread.test(window.location.href)) {
+  var jq = document.createElement('script');
+  jq.src = 'http://code.jquery.com/jquery-3.3.1.min.js';
+  jq.type = 'text/javascript';
+  document.getElementsByTagName('head')[0].appendChild(jq);
+}
+
 
 (function(document) {
   chrome.storage.sync.get('hotkeys', (results) => {
@@ -109,6 +118,8 @@ head.insertBefore(script, head.lastChild);
   });
 }(document));
 
+let seletcObserver;
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   console.log(sender.tab ?
     `from a content script:${sender.tab.url}` :
@@ -116,7 +127,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   const manageinbatch = new RegExp(`internaltranzit/manage_in_batch*`);
   if (manageinbatch.test(location.href)) {
-    let seletcObserver;
+    
     var setselect = function(cursta, proper, selected) {
 
       return function(records) {
