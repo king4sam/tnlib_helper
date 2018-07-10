@@ -1,3 +1,5 @@
+var searchhelper = new SearchHelper('http://163.26.71.106/');
+
 function reqListener(req) {
   const { index } = req.target;
   const regex = /(條碼：(.+))，/g;
@@ -11,7 +13,7 @@ function reqListener(req) {
   const htmlDoc = parser.parseFromString(req.target.response, 'text/html');
   const submitbook = htmlDoc.querySelectorAll('#___01 > tbody > tr:nth-child(3) > td > div > div:nth-child(2) > form > table > tbody > tr:nth-child(5) > td:nth-child(2) > div');
   submitbook.forEach((e) => {
-    if (!e.children[0].checked) {
+    if (e.children[0].checked) {
       let matches = regex.exec(e.innerText);
       while (matches !== null) {
         // This is necessary to avoid infinite loops with zero-width matches
@@ -24,7 +26,7 @@ function reqListener(req) {
       }
     }
   });
-  const bookrequests = barcodes.map(barcode => getbookpage([barcode]));
+  const bookrequests = barcodes.map(barcode => searchhelper.getbookpage([barcode]));
   Promise.all(bookrequests)
     .then((ress) => {
       const PopoverContentAry = [];
@@ -81,7 +83,6 @@ function reqListener(req) {
 
 // parse urls for reservations
 const urls = $('table[class=tab1] tr td a').toArray().slice(0, -4).map(e => e.href);
-
 // fetch page to get barcode of books
 urls.forEach((e, i) => {
   const xhr = new XMLHttpRequest();
