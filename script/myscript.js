@@ -1,5 +1,13 @@
 const host = 'http://163.26.71.106/toread/';
 
+const head = document.head || document.getElementsByTagName('head')[0] || document.documentElement;
+
+const extensionid = document.createElement('div');
+extensionid.id = 'extensionid';
+extensionid.style.display = "none";
+extensionid.append(document.createTextNode(chrome.runtime.id));
+head.insertBefore(extensionid,head.lastChild);
+
 const script = document.createElement('script');
 script.setAttribute('type', 'module');
 script.setAttribute('src', chrome.extension.getURL('./script/main.js'));
