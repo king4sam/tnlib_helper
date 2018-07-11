@@ -52,8 +52,7 @@
     "script/main.js"
   ],
   "externally_connectable": {
-    "matches": ["http://163.26.71.106/*"],
-    "matches": ["http://163.26.71.107/*"]
+    "matches": ["*://163.26.71.106/*","*://163.26.71.107/*"]
   },
   "manifest_version": 2
 }

@@ -6,7 +6,7 @@ const extensionid = document.createElement('div');
 extensionid.id = 'extensionid';
 extensionid.style.display = "none";
 extensionid.append(document.createTextNode(chrome.runtime.id));
-head.insertBefore(extensionid,head.lastChild);
+head.insertBefore(extensionid, head.lastChild);
 
 const script = document.createElement('script');
 script.setAttribute('type', 'module');
@@ -125,7 +125,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     `from a content script:${sender.tab.url}` :
     'from the extension');
 
-  const manageinbatch = new RegExp(`internaltranzit/manage_in_batch*`);
+  const manageinbatch = new RegExp(`internaltranzit/manage_in_batch|/internaltranzit/ManageInBatch`);
   if (manageinbatch.test(location.href)) {
     
     var setselect = function(cursta, proper, selected) {

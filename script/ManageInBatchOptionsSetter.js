@@ -3,7 +3,7 @@ import LibHost from './LibHost.js';
 export default class ManageInBatchOptionsSetter extends LibHost {
   constructor(host) {
     super(host);
-    this.manageinbatchPath = 'internaltranzit/manage_in_batch';
+    this.manageinbatchPath = 'internaltranzit/manage_in_batch|/internaltranzit/ManageInBatch';
   }
 
   ManageInBatchOptionsInit() {

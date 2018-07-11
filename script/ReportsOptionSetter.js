@@ -5,8 +5,8 @@ import LibHost from './LibHost.js';
 export default class ReportsOptionSetter extends LibHost {
   constructor(host) {
     super(host);
-    this.exttransit = 'circulation/exttransit/required_from_ext_transit*';
-    this.search = 'circulation/pages/search_transactions*';
+    this.exttransit = 'circulation/exttransit/required_from_ext_transit|/RequiredFromExtTransit';
+    this.search = 'circulation/pages/search_transactions|/circulation/pages/SearchTransactions';
     this.ps5 = 'PropertySelection_5';
     this.ps6 = 'PropertySelection_6';
     this.ps7 = 'PropertySelection_7';
@@ -23,7 +23,7 @@ export default class ReportsOptionSetter extends LibHost {
           console.log('no AssignedReports');
         }
     }
-    
+
   }
 
   setSearchReportsOptions(eles) {
