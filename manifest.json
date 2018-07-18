@@ -1,6 +1,6 @@
 {
   "name": "台南市立公共圖書館館員小幫手",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "提升嗶嗶效率，減少讀者等待時間",
   "permissions": ["activeTab", "management", "declarativeContent","tabs","storage","http://163.26.71.106/","http://163.26.71.107/","http://anding-lib.tainan.gov.tw/"],
   "content_scripts": [
