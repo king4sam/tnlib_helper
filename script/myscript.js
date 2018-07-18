@@ -13,6 +13,14 @@ script.setAttribute('type', 'module');
 script.setAttribute('src', chrome.extension.getURL('./script/main.js'));
 head.insertBefore(script, head.lastChild);
 
+const check_in_box = new RegExp(`/toread/circulation/pages/check_in_box`);
+if (check_in_box.test(window.location.href)) {
+  var jq = document.createElement('script');
+  jq.src = 'http://code.jquery.com/jquery-3.3.1.min.js';
+  jq.type = 'text/javascript';
+  document.getElementsByTagName('head')[0].appendChild(jq);
+}
+
 (function(document) {
   chrome.storage.sync.get('hotkeys', (results) => {
     let namecodemap;
@@ -117,7 +125,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
   const manageinbatch = new RegExp(`internaltranzit/manage_in_batch|/internaltranzit/ManageInBatch`);
   if (manageinbatch.test(location.href)) {
-    
+
     var setselect = function(cursta, proper, selected) {
 
       return function(records) {
