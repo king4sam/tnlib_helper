@@ -198,3 +198,5 @@ class SearchHelper {
       });
   }
 }
+
+module.exports = SearchHelper

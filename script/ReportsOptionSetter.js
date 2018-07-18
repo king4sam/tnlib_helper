@@ -13,7 +13,8 @@ export default class ReportsOptionSetter extends LibHost {
     this.ps8 = 'PropertySelection_8';
   }
 
-  setExttransitReportsOptions(eles) {
+  setExttransitReportsOptions() {
+    var eles = {ps5 : this.ps5, ps6 : this.ps6, ps7 : this.ps7};
     return function() {
         try {
           document.getElementById(eles.ps5).selectedIndex = '1';
@@ -26,7 +27,8 @@ export default class ReportsOptionSetter extends LibHost {
 
   }
 
-  setSearchReportsOptions(eles) {
+  setSearchReportsOptions() {
+    var eles = {ps7 : this.ps7, ps8 : this.ps8};
     return function(){
           try {
           document.getElementById(eles.ps7).selectedIndex = '1';
@@ -43,12 +45,10 @@ export default class ReportsOptionSetter extends LibHost {
     const searchUrl = new RegExp(this.search);
     const options = { subtree: true, childList: true, characterData: true };
     if (exttransitUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
-      var eles = {ps5 : this.ps5, ps6 : this.ps6, ps7 : this.ps7};
-      const exttransitReportsObserver = new MutationObserver(this.setExttransitReportsOptions(eles));
+      const exttransitReportsObserver = new MutationObserver(this.setExttransitReportsOptions());
       exttransitReportsObserver.observe(document.getElementById('AssignedReports'), options);
     } else if (searchUrl.test(this.getlocation()) && document.getElementById('AssignedReports') !== null) {
-      var eles = {ps7 : this.ps7, ps8 : this.ps8};
-      const searchReportsObserver = new MutationObserver(this.setSearchReportsOptions(eles));
+      const searchReportsObserver = new MutationObserver(this.setSearchReportsOptions());
       searchReportsObserver.observe(document.getElementById('AssignedReports'), options);
     }
   }
